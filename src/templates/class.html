@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Danh sách Lớp học</h1>
+<div class="search-bar">
+    <input type="text" placeholder="Tìm kiếm theo mã hoặc tên">
+    <button class="btn btn-primary">Thêm mới</button>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Mã lớp</th>
+            <th>Tên lớp</th>
+            <th>Giáo viên phụ trách</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for class_obj in classes %}
+        <tr>
+            <td>{{ class_obj.code }}</td>
+            <td>{{ class_obj.name }}</td>
+            <td>{{ (class_obj.teacher.full_name if class_obj.teacher else 'Chưa có') }}</td>
+            <td>
+                <a href="{{ url_for('edit_class', id=class_obj.id) }}" class="btn btn-warning">Sửa</a>
+                <a href="{{ url_for('delete_class', id=class_obj.id) }}" class="btn btn-danger">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if edit_class %}
+<h2>Sửa Lớp học</h2>
+{% else %}
+<h2>Thêm Lớp học</h2>
+{% endif %}
+<form method="POST" action="{{ url_for('class_list') if not edit_class else url_for('edit_class', id=edit_class.id) }}">
+    <label for="code">Mã lớp:</label><br>
+    <input type="text" id="code" name="code" value="{{ edit_class.code if edit_class else '' }}" required><br>
+    <label for="name">Tên lớp:</label><br>
+    <input type="text" id="name" name="name" value="{{ edit_class.name if edit_class else '' }}" required><br>
+    <label for="teacher_id">Giáo viên phụ trách:</label><br>
+    <select id="teacher_id" name="teacher_id" required>
+        <option value="">Chọn giáo viên</option>
+        {% for teacher in teachers %}
+        <option value="{{ teacher.id }}" {% if edit_class and edit_class.teacher_id == teacher.id %}selected{% endif %}>{{ teacher.full_name }}</option>
+        {% endfor %}
+    </select><br><br>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>
+{% endblock %}
