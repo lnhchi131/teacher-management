@@ -173,11 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# database
-*.db
-*.sqlite
 
-# environment variables
-.envrc
-.env
 
