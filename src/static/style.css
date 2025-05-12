@@ -15,6 +15,10 @@ body {
     color: white;
     padding: 20px;
     transition: width 0.3s;
+    position: fixed;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 .sidebar h2 {
@@ -49,6 +53,7 @@ body {
 .main-content {
     flex-grow: 1;
     padding: 20px;
+    margin-left: 200px;
     transition: margin-left 0.3s;
 }
 
@@ -123,3 +128,15 @@ body {
 .alert {
     border-radius: 5px;
 }
+
+.dashboard {
+
+    margin-left: 60px;
+    border-radius: 10px;
+    width: 80%
+}
+
+.sidebar.collapsed + .main-content {
+    margin-left: 70px; /* Khi sidebar thu gọn, nội dung chính dịch sát hơn */
+}   
+
