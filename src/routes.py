@@ -1,6 +1,8 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from models import db, User, Degree, Faculty, Teacher, Class
 from datetime import datetime, timedelta
+from werkzeug.security import check_password_hash
+
 
 def register_routes(app):
     @app.route('/')
@@ -23,8 +25,8 @@ def register_routes(app):
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
-            user = User.query.filter_by(username=username, password=password).first()
-            if user:
+            user = User.query.filter_by(username=username).first()
+            if user and check_password_hash(user.password, password):  # So sánh đúng cách
                 session['user_id'] = user.id
                 return redirect(url_for('index'))
             flash("Tên đăng nhập hoặc mật khẩu không đúng", "error")
