@@ -10,7 +10,7 @@
         <tr>
             <th>Tên đầy đủ</th>
             <th>Tên viết tắt</th>
-            <th>Mô tả nhiệm vụ</th>
+            <th>Mô tả niềm vui</th>
             <th>Hành động</th>
         </tr>
     </thead>
@@ -39,7 +39,7 @@
     <input type="text" id="name" name="name" value="{{ edit_faculty.name if edit_faculty else '' }}" required><br>
     <label for="abbreviation">Tên viết tắt:</label><br>
     <input type="text" id="abbreviation" name="abbreviation" value="{{ edit_faculty.abbreviation if edit_faculty else '' }}"><br>
-    <label for="description">Mô tả nhiệm vụ:</label><br>
+    <label for="description">Mô tả niềm vui:</label><br>
     <input type="text" id="description" name="description" value="{{ edit_faculty.description if edit_faculty else '' }}"><br><br>
     <button type="submit" class="btn btn-primary">Lưu</button>
 </form>
