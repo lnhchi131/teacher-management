@@ -26,6 +26,9 @@ class Teacher(db.Model):
     email = db.Column(db.String(100))
     faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
     degree_id = db.Column(db.Integer, db.ForeignKey('degree.id'))
+    # Thêm relationship
+    degree = db.relationship('Degree', backref='teachers')
+    faculty = db.relationship('Faculty', backref='teachers')
 
 class Class(db.Model):
     id = db.Column(db.Integer, primary_key=True)
