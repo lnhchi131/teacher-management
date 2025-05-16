@@ -1,0 +1,93 @@
+/* Điều chỉnh khoảng cách và kiểu dáng */
+body {
+    background-color: #f8f9fa;
+}
+
+h2 {
+    color: #343a40;
+}
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.alert {
+    margin-bottom: 20px;
+}
+
+.salary-summary {
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.increase {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.decrease {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Hiệu ứng hover cho cards */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Định dạng sidebar */
+.sidebar {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar .nav-link {
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #495057;
+}
+
+.content {
+    margin-left: 250px;
+    min-height: 100vh;
+}
+
+/* Responsive: Ẩn sidebar trên màn hình nhỏ và hiển thị nút toggle */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+        transform: translateX(-200px);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1100;
+    }
+}

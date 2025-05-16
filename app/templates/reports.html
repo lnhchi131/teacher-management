@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Báo cáo</h1>
+<form method="POST">
+    <input type="text" name="details" placeholder="Chi tiết báo cáo" required>
+    <button type="submit">Gửi</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Chi tiết</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report[0] }}</td>
+            <td>{{ report[1] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

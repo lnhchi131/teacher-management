@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Thêm Giáo viên</h2>
+<form method="POST" class="mb-5">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="teacher_name" class="form-label">Tên giáo viên</label>
+            <input type="text" class="form-control" id="teacher_name" name="teacher_name" placeholder="Nhập tên giáo viên" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="birth_date" class="form-label">Ngày sinh</label>
+            <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+        </div>
+    </div>
+    <button type="submit" name="add_teacher" class="btn btn-success">Thêm giáo viên</button>
+</form>
+
+<h2 class="mb-4">Danh sách Giáo viên</h2>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Ngày sinh</th>
+                <th>Bằng cấp</th>
+                <th>Khoa</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher[0] }}</td>
+                <td>{{ teacher[1] }}</td>
+                <td>{{ teacher[2] }}</td>
+                <td>
+                    {% for degree in degrees %}
+                        {% if degree[0] == teacher[0] %}
+                            {{ degree[3] if degree[3] else 'Chưa có bằng cấp' }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for class in classes %}
+                        {% if class[1] == teacher[1] %}
+                            {% for course in courses %}
+                                {% if course[0] == class[2] %}
+                                    {{ course[1] }}{% if not loop.last %}, {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    <form method="POST" class="d-inline">
+                        <input type="hidden" name="teacher_id" value="{{ teacher[0] }}">
+                        <input type="text" class="form-control d-inline-block w-auto" name="teacher_name" value="{{ teacher[1] }}" required>
+                        <input type="date" class="form-control d-inline-block w-auto" name="birth_date" value="{{ teacher[2] }}" required>
+                        <button type="submit" name="edit_teacher" class="btn btn-warning btn-sm">Sửa</button>
+                    </form>
+                    <form method="POST" class="d-inline">
+                        <input type="hidden" name="teacher_id" value="{{ teacher[0] }}">
+                        <button type="submit" name="delete_teacher" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

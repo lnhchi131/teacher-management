@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row text-center mb-5">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ teachers|length }}</h3>
+                <p class="card-text text-muted">Giáo viên</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ courses|length }}</h3>
+                <p class="card-text text-muted">Khoá học</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ classes|length }}</h3>
+                <p class="card-text text-muted">Lớp học</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

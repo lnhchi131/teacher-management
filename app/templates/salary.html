@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tính lương</h1>
+<div class="salary-summary">
+    <p>Tổng lương: {{ total_salary }} VNĐ</p>
+    <p>Thay đổi so với tháng trước: 
+        {% if salary_change > 0 %}
+            <span class="increase">+{{ salary_change }}%</span>
+        {% elif salary_change < 0 %}
+            <span class="decrease">{{ salary_change }}%</span>
+        {% else %}
+            <span>Không thay đổi</span>
+        {% endif %}
+    </p>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Giáo viên</th>
+            <th>Số giờ dạy</th>
+            <th>Lương (VNĐ)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for salary in salaries %}
+        <tr
+            <td>{{ salary.teacher_name }}</td>
+            <td>{{ salary.hours }}</td>
+            <td>{{ salary.amount }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

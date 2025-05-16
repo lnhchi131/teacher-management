@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Quản lý Khoá học</h1>
+<form method="POST">
+    <input type="text" name="course_name" placeholder="Tên khoá học" required>
+    <button type="submit" name="add">Thêm</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên Khoá học</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course[0] }}</td>
+            <td>{{ course[1] }}</td>
+            <td>
+                <form method="POST">
+                    <input type="hidden" name="course_id" value="{{ course[0] }}">
+                    <button type="submit" name="delete">Xóa</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
