@@ -1,0 +1,28 @@
+{% extends "quanlygiaovien/quanlygiaovien.html" %}
+{% block content %}
+<div class="content-header">
+    <h3>Thêm Bằng Cấp</h3>
+    <a href="{{ url_for('quanly_giaovien', section='bangcap') }}"><button class="btn-back">Quay lại</button></a>
+</div>
+<form method="POST" action="{{ url_for('quanly_giaovien', section='bangcap', action='them') }}">
+    <div class="form-group">
+        <label for="degree_type">Loại Bằng Cấp:</label>
+        <select id="degree_type" name="degree_type" required>
+            <option value="Đại học">Đại học</option>
+            <option value="Thạc sĩ">Thạc sĩ</option>
+            <option value="Tiến sĩ">Tiến sĩ</option>
+            <option value="Phó giáo sư">Phó giáo sư</option>
+            <option value="Giáo sư">Giáo sư</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="teacher_id">Giảng Viên:</label>
+        <select id="teacher_id" name="teacher_id" required>
+            {% for teacher in teachers %}
+            <option value="{{ teacher.id }}">{{ teacher.id }} - {{ teacher.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn-add">Thêm Bằng Cấp</button>
+</form>
+{% endblock %}

@@ -1,6 +1,6 @@
 from flask import Flask
-from models import db, User
-from routes import register_routes
+from controllers.models import *
+from controllers.routes import register_routes
 from dotenv import load_dotenv
 import os
 

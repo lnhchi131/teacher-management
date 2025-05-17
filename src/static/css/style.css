@@ -45,7 +45,8 @@ body {
     font-size: 1.1rem;
 }
 
-.sidebar ul li a:hover, .sidebar ul li a.active {
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
     background-color: #34495e;
     border-radius: 5px;
 }
@@ -91,6 +92,7 @@ body {
     .toggle-btn {
         display: block;
     }
+
     .sidebar {
         width: 70px;
         position: fixed;
@@ -99,12 +101,15 @@ body {
         left: 0;
         z-index: 1000;
     }
+
     .sidebar.collapsed {
         width: 0;
     }
+
     .main-content {
         margin-left: 70px;
     }
+
     .main-content.expanded {
         margin-left: 0;
     }
@@ -136,7 +141,7 @@ body {
     width: 80%
 }
 
-.sidebar.collapsed + .main-content {
-    margin-left: 70px; /* Khi sidebar thu gọn, nội dung chính dịch sát hơn */
-}   
-
+.sidebar.collapsed+.main-content {
+    margin-left: 70px;
+    /* Khi sidebar thu gọn, nội dung chính dịch sát hơn */
+}

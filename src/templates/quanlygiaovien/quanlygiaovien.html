@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Giáo Viên</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quanlygiaovien.css') }}">
+</head>
+
+<body>
+    <header>
+        <h2>🎓 Quản Lý Giáo Viên</h2>
+        <div>👤</div>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <a href="{{ url_for('quanly_giaovien', section='giaovien') }}"><button class="feature-box">👨‍🏫 Giáo
+                    viên</button></a>
+            <a href="{{ url_for('quanly_giaovien', section='bangcap') }}"><button class="feature-box">🎓 Bằng
+                    cấp</button></a>
+            <a href="{{ url_for('quanly_giaovien', section='khoa') }}"><button class="feature-box">🏢 Khoa</button></a>
+            <a href="{{ url_for('quanly_giaovien', section='thongke') }}"><button class="feature-box">📋 Báo
+                    cáo</button></a>
+        </div>
+
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% block content %}
+            <!-- Default content for /giaovien (Danh Sách Giáo Viên) -->
+            <div class="content-header">
+                <h3>Danh Sách Giáo Viên</h3>
+                <button class="btn-add">+ Thêm Giáo Viên</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã GV</th>
+                            <th>Họ Tên</th>
+                            <th>Khoa</th>
+                            <th>Bằng Cấp</th>
+                            <th>Hệ Số</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>GV001</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>CNTT</td>
+                            <td>Thạc sĩ</td>
+                            <td>1.5</td>
+                            <td class="actions">
+                                <button type="button" class="btn btn-info">✏️</button>
+                                <button type="button" class="btn btn-info"> 🗑️</button>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+
+</body>
+
+</html>
