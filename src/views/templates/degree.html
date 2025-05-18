@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Danh sách Bằng cấp</h1>
+<div class="search-bar">
+    <input type="text" placeholder="Tìm kiếm theo tên">
+    <button class="btn btn-primary">Thêm mới</button>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Tên bằng cấp</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for degree in degrees %}
+        <tr>
+            <td>{{ degree.name }}</td>
+            <td>
+                <a href="{{ url_for('edit_degree', id=degree.id) }}" class="btn btn-warning">Sửa</a>
+                <a href="{{ url_for('delete_degree', id=degree.id) }}" class="btn btn-danger">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if edit_degree %}
+<h2>Sửa Bằng cấp</h2>
+{% else %}
+<h2>Thêm Bằng cấp</h2>
+{% endif %}
+<form method="POST" action="{{ url_for('degree') if not edit_degree else url_for('edit_degree', id=edit_degree.id) }}">
+    <label for="name">Tên bằng cấp:</label><br>
+    <input type="text" id="name" name="name" value="{{ edit_degree.name if edit_degree else '' }}" required><br><br>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>
+{% endblock %}
