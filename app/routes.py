@@ -38,9 +38,9 @@ def index():
     if not current_user.is_authenticated:
         return redirect(url_for('main.login'))
     teachers = controller.get_teachers()
-    courses = controller.get_courses()
+    faculties = controller.get_faculties()
     classes = controller.get_classes()
-    return render_template('index.html', teachers=teachers, courses=courses, classes=classes)
+    return render_template('index.html', teachers=teachers, faculties=faculties, classes=classes)
 
 @bp.route('/teachers', methods=['GET', 'POST'])
 @login_required
@@ -74,9 +74,9 @@ def teachers():
     
     teachers = controller.get_teachers()
     degrees = controller.get_teachers_with_degrees_info()
-    courses = controller.get_courses()
+    faculties = controller.get_faculties()
     classes = controller.get_classes()
-    return render_template('teachers.html', teachers=teachers, degrees=degrees, courses=courses, classes=classes)
+    return render_template('teachers.html', teachers=teachers, degrees=degrees, faculties=faculties, classes=classes)
 
 @bp.route('/degrees', methods=['GET', 'POST'])
 @login_required
@@ -101,23 +101,58 @@ def degrees():
         return redirect(url_for('main.degrees'))
     
     teachers_with_degrees = controller.get_teachers_with_degrees_info()
-    degree_types = ['Thạc sĩ', 'Tiến sĩ', 'Giáo sư']  # Danh sách loại bằng cấp cố định
+    degree_types = ['Thạc sĩ', 'Tiến sĩ', 'Giáo sư', 'Phó giáo sư', 'Cử nhân']
     return render_template('degrees.html', teachers_with_degrees=teachers_with_degrees, degree_types=degree_types)
 
-@bp.route('/courses', methods=['GET', 'POST'])
+@bp.route('/faculty', methods=['GET', 'POST'])
 @login_required
-def courses():
+def faculty():
+    edit_faculty = None
+    message = None
+
     if request.method == 'POST':
-        if 'add' in request.form:
-            course_name = request.form['course_name']
-            controller.add_course(course_name)
-        elif 'delete' in request.form:
-            course_id = int(request.form['course_id'])
-            controller.delete_course(course_id)
-        return redirect(url_for('main.courses'))
+        if 'edit_id' in request.form:
+            edit_id = int(request.form['edit_id'])
+            faculties = controller.get_faculties()
+            edit_faculty = next((f for f in faculties if f[0] == edit_id), None)
+        elif 'save_edit' in request.form:
+            faculty_id = int(request.form['faculty_id'])
+            faculty_name = request.form['name']
+            abbreviation = request.form['abbreviation']
+            description = request.form.get('description', None)
+            controller.update_faculty(faculty_id, faculty_name, abbreviation, description)
+            flash('Chỉnh sửa khoa thành công!', 'success')
+            return redirect(url_for('main.faculty'))
+        else:
+            faculty_name = request.form['name']
+            abbreviation = request.form['abbreviation']
+            description = request.form.get('description', None)
+            controller.add_faculty(faculty_name, abbreviation, description)
+            flash('Thêm khoa thành công!', 'success')
+            return redirect(url_for('main.faculty'))
+
+    search_query = request.args.get('search', '').strip()
+    faculties = controller.get_faculties()
     
-    courses = controller.get_courses()
-    return render_template('courses.html', courses=courses)
+    if search_query:
+        filtered_faculties = [
+            faculty for faculty in faculties
+            if search_query.lower() in faculty[1].lower() or search_query.lower() in faculty[2].lower()
+        ]
+        if filtered_faculties:
+            message = f"Đã tìm thấy {len(filtered_faculties)} khoa phù hợp."
+        else:
+            message = "Không tìm thấy khoa nào phù hợp."
+        faculties = filtered_faculties
+
+    return render_template('faculty.html', faculties=faculties, edit_faculty=edit_faculty, message=message)
+
+@bp.route('/faculty/delete/<int:id>', methods=['GET'])
+@login_required
+def delete_faculty(id):
+    controller.delete_faculty(id)
+    flash('Xóa khoa thành công!', 'success')
+    return redirect(url_for('main.faculty'))
 
 @bp.route('/classes', methods=['GET', 'POST'])
 @login_required
@@ -125,17 +160,19 @@ def classes():
     if request.method == 'POST':
         if 'add' in request.form:
             teacher_id = int(request.form['teacher_id'])
-            course_id = int(request.form['course_id'])
-            controller.add_class(teacher_id, course_id)
+            faculty_id = int(request.form['faculty_id'])
+            controller.add_class(teacher_id, faculty_id)
+            flash('Thêm lớp học thành công!', 'success')
         elif 'delete' in request.form:
             class_id = int(request.form['class_id'])
             controller.delete_class(class_id)
+            flash('Xóa lớp học thành công!', 'success')
         return redirect(url_for('main.classes'))
     
     teachers = controller.get_teachers()
-    courses = controller.get_courses()
+    faculties = controller.get_faculties()
     classes = controller.get_classes()
-    return render_template('classes.html', teachers=teachers, courses=courses, classes=classes)
+    return render_template('classes.html', teachers=teachers, faculties=faculties, classes=classes)
 
 @bp.route('/salary')
 @login_required
@@ -150,6 +187,7 @@ def reports():
     if request.method == 'POST':
         details = request.form['details']
         controller.add_report(details)
+        flash('Thêm báo cáo thành công!', 'success')
         return redirect(url_for('main.reports'))
     
     reports = controller.get_reports()

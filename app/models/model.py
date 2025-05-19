@@ -17,10 +17,13 @@ class Model:
         self.connection = None
         try:
             self.connection = mysql.connector.connect(
-                host="localhost",
-                user="root",  # Thay bằng username MySQL của bạn
-                password="2T!Exp.999%",  # Thay bằng password MySQL của bạn
-                database="teacher_management"
+                host="mysql-34fa5599-scvgden-9e65.b.aivencloud.com",
+                port=10023,
+                user="avnadmin",
+                password="AVNS_OeD2WJJNW4UHZZOtCEi",
+                database="teacher_management",
+                ssl_ca=None,
+                ssl_verify_cert=False
             )
         except Error as e:
             print(f"Error connecting to MySQL: {e}")
@@ -72,11 +75,8 @@ class Model:
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        # Xóa các bản ghi liên quan trong bảng classes trước
         cursor.execute("DELETE FROM classes WHERE teacher_id = %s", (teacher_id,))
-        # Xóa bằng cấp của giáo viên (nếu có)
         cursor.execute("DELETE FROM degrees WHERE teacher_id = %s", (teacher_id,))
-        # Xóa giáo viên
         cursor.execute("DELETE FROM teachers WHERE id = %s", (teacher_id,))
         self.connection.commit()
         cursor.close()
@@ -108,7 +108,6 @@ class Model:
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        # Lấy tất cả giáo viên, kể cả những người chưa có bằng cấp
         cursor.execute("""
             SELECT t.id, t.name, d.id, d.name 
             FROM teachers t 
@@ -126,28 +125,29 @@ class Model:
         self.connection.commit()
         cursor.close()
 
-    def add_course(self, name):
+    def add_faculty(self, name, abbreviation, description=None):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO courses (name) VALUES (%s)", (name,))
+        cursor.execute("INSERT INTO faculty (name, abbreviation, description) VALUES (%s, %s, %s)", (name, abbreviation, description))
         self.connection.commit()
         cursor.close()
 
-    def get_courses(self):
+    def get_faculties(self):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, name FROM courses")
-        courses = cursor.fetchall()
+        cursor.execute("SELECT id, name, abbreviation, description FROM faculty")
+        faculties = cursor.fetchall()
         cursor.close()
-        return courses
+        return faculties
 
-    def delete_course(self, course_id):
+    def delete_faculty(self, faculty_id):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM courses WHERE id = %s", (course_id,))
+        cursor.execute("DELETE FROM classes WHERE faculty_id = %s", (faculty_id,))
+        cursor.execute("DELETE FROM faculty WHERE id = %s", (faculty_id,))
         self.connection.commit()
         cursor.close()
 
@@ -182,11 +182,11 @@ class Model:
         cursor.close()
         return count
 
-    def add_class(self, teacher_id, course_id):
+    def add_class(self, teacher_id, faculty_id):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO classes (teacher_id, course_id) VALUES (%s, %s)", (teacher_id, course_id))
+        cursor.execute("INSERT INTO classes (teacher_id, faculty_id) VALUES (%s, %s)", (teacher_id, faculty_id))
         self.connection.commit()
         cursor.close()
 
@@ -195,10 +195,10 @@ class Model:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT c.id, t.name, co.name
+            SELECT c.id, t.name, f.name
             FROM classes c
             JOIN teachers t ON c.teacher_id = t.id
-            JOIN courses co ON c.course_id = co.id
+            JOIN faculty f ON c.faculty_id = f.id
         """)
         classes = cursor.fetchall()
         cursor.close()
