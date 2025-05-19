@@ -1,42 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="dashboard-cards">
-    <h1 class="text-center mb-4">Tổng quan</h1>
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card shadow">
-                <div class="card-body card-teachers">
-                    <h5 class="card-title">Giáo Viên</h5>
-                    <p class="card-text">{{ teachers|length }}</p>
-                    <a href="{{ url_for('main.teachers') }}" class="btn btn-primary">Xem danh sách</a>
-                </div>
+<div class="row text-center mb-5">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ teachers|length }}</h3>
+                <p class="card-text text-muted">Giáo viên</p>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card shadow">
-                <div class="card-body card-faculty">
-                    <h5 class="card-title">Khoa</h5>
-                    <p class="card-text">{{ facultyfaculty|length }}</p>
-                    <a href="{{ url_for('main.faculty') }}" class="btn btn-primary">Xem danh sách</a>
-                </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ courses|length }}</h3>
+                <p class="card-text text-muted">Khoá học</p>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card shadow">
-                <div class="card-body card-classes">
-                    <h5 class="card-title">Lớp Học</h5>
-                    <p class="card-text">{{ classes|length }}</p>
-                    <a href="{{ url_for('main.classes') }}" class="btn btn-primary">Xem danh sách</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow">
-                <div class="card-body card-salary">
-                    <h5 class="card-title">Tổng Lương</h5>
-                    <p class="card-text">{{ total_salary }} VNĐ</p>
-                    <a href="{{ url_for('main.salary') }}" class="btn btn-primary">Xem danh sách</a>
-                </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ classes|length }}</h3>
+                <p class="card-text text-muted">Lớp học</p>
             </div>
         </div>
     </div>

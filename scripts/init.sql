@@ -22,27 +22,25 @@ CREATE TABLE teachers (
 -- Bảng degrees: Lưu thông tin bằng cấp của giáo viên
 CREATE TABLE degrees (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL CHECK (name IN ('Thạc sĩ', 'Tiến sĩ', 'Giáo sư', 'Phó giáo sư', 'Cử nhân')),
+    name VARCHAR(255) NOT NULL CHECK (name IN ('Thạc sĩ', 'Tiến sĩ', 'Giáo sư')),
     teacher_id INT,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id),
     UNIQUE (teacher_id) -- Mỗi giáo viên chỉ có một bằng cấp
 );
 
--- Bảng faculty: Lưu thông tin khoá học
-CREATE TABLE faculty (
+-- Bảng courses: Lưu thông tin khoá học
+CREATE TABLE courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    abbreviation VARCHAR(225) NOT NULL UNIQUE,
-    description VARCHAR(225)
+    name VARCHAR(255) NOT NULL
 );
 
--- Bảng classes: Lưu thông tin lớp học (liên kết giữa giáo viên và khoa)
+-- Bảng classes: Lưu thông tin lớp học (liên kết giữa giáo viên và khoá học)
 CREATE TABLE classes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     teacher_id INT,
-    faculty_id INT,
+    course_id INT,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id),
-    FOREIGN KEY (faculty_id) REFERENCES faculty(id)
+    FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
 -- Bảng reports: Lưu thông tin báo cáo
@@ -68,13 +66,13 @@ INSERT INTO degrees (name, teacher_id) VALUES
     ('Giáo sư', 3);
 
 -- Khoá học
-INSERT INTO faculty (name) VALUES 
+INSERT INTO courses (name) VALUES 
     ('Toán Cao cấp'), 
     ('Vật lý Đại cương'), 
     ('Hoá học Cơ bản');
 
 -- Lớp học
-INSERT INTO classes (teacher_id, faculty_id) VALUES 
+INSERT INTO classes (teacher_id, course_id) VALUES 
     (1, 1), 
     (1, 2), 
     (2, 1), 
@@ -83,6 +81,3 @@ INSERT INTO classes (teacher_id, faculty_id) VALUES
 -- Báo cáo
 INSERT INTO reports (details) VALUES 
     ('Báo cáo tháng 5: Hoạt động giảng dạy ổn định.');
-
-def add_faculty(self, name, abbreviation, description):
-    self.model.add_faculty(name, abbreviation, description)

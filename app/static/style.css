@@ -9,8 +9,6 @@ h2 {
 
 .table-responsive {
     margin-top: 20px;
-    overflow-x: auto;
-    min-height: 0.01%;
 }
 
 .alert {
@@ -92,84 +90,4 @@ h2 {
         left: 15px;
         z-index: 1100;
     }
-}
-
-/* Các màu sắc cho các card */
-.dashboard-cards .row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.dashboard-cards .col-md-4 {
-    margin-bottom: 20px;
-}
-
-.card-body.card-teachers {
-    background: linear-gradient(135deg, #1e88e5, #0d47a1);
-    color: white;
-}
-
-.card-body.card-faculty {
-    background: linear-gradient(135deg, #43a047, #1b5e20);
-    color: white;
-}
-
-.card-body.card-classes {
-    background: linear-gradient(135deg, #e53935, #b71c1c);
-    color: white;
-}
-
-.card-body.card-salary {
-    background: linear-gradient(135deg, #fb8c00, #e65100);
-    color: white;
-}
-
-/* Làm cho nút trong card có màu phù hợp */
-.card-teachers .btn-primary {
-    background-color: white;
-    color: #1e88e5;
-    border: none;
-}
-
-.card-faculty .btn-primary {
-    background-color: white;
-    color: #43a047;
-    border: none;
-}
-
-.card-classes .btn-primary {
-    background-color: white;
-    color: #e53935;
-    border: none;
-}
-
-.card-salary .btn-primary {
-    background-color: white;
-    color: #fb8c00;
-    border: none;
-}
-
-.dashboard-cards .card-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-}
-
-.dashboard-cards .card-text {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-/* Bo tròn góc cho card */
-.card {
-    border-radius: 15px; /* Điều chỉnh giá trị để có độ cong mong muốn */
-}
-
-.card-body {
-    border-radius: 15px; /* Điều chỉnh giá trị để có độ cong mong muốn */
-}
-
-/* Đảm bảo input tìm kiếm không bị kéo dài quá mức */
-form.d-flex .form-control.w-25 {
-    min-width: 220px;
-    max-width: 350px;
 }
