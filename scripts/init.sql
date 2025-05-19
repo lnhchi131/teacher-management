@@ -84,5 +84,3 @@ INSERT INTO classes (teacher_id, faculty_id) VALUES
 INSERT INTO reports (details) VALUES 
     ('Báo cáo tháng 5: Hoạt động giảng dạy ổn định.');
 
-def add_faculty(self, name, abbreviation, description):
-    self.model.add_faculty(name, abbreviation, description)
