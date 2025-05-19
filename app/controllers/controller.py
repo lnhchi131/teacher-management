@@ -35,14 +35,17 @@ class Controller:
     def delete_degree(self, degree_id):
         self.model.delete_degree(degree_id)
 
-    def add_faculty(self, faculty_name, abbreviation, description=None):
-        self.model.add_faculty(faculty_name, abbreviation, description)
+    def get_faculty(self):
+        return self.model.get_faculty()
 
-    def get_faculties(self):
-        return self.model.get_faculties()
+    def add_faculty(self, name, abbreviation, description):
+        self.model.add_faculty(name, abbreviation, description)
 
     def delete_faculty(self, faculty_id):
         self.model.delete_faculty(faculty_id)
+
+    def update_faculty(self, faculty_id, name, abbreviation, description):
+        self.model.update_faculty(faculty_id, name, abbreviation, description)
 
     def calculate_salary(self):
         teachers = self.model.get_teachers_with_degrees()
@@ -53,7 +56,7 @@ class Controller:
             teacher_name = teacher[1]
             degree_name = teacher[2] if teacher[2] else 'Cử nhân'
             hours = self.model.get_class_count_by_teacher(teacher_id)
-            degree_coefficient = {'Cử nhân': 1.0, 'Thạc sĩ': 1.2, 'Tiến sĩ': 1.5, 'Giáo sư': 2.0, 'Phó giáo sư': 1.8}.get(degree_name, 1.0)
+            degree_coefficient = {'Cử nhân': 1.0, 'Thạc sĩ': 1.2, 'Tiến sĩ': 1.5}.get(degree_name, 1.0)
             salary_amount = hours * 50000 * degree_coefficient  # 50,000 VNĐ/giờ
             total_salary += salary_amount
             salaries.append({

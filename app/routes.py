@@ -38,9 +38,10 @@ def index():
     if not current_user.is_authenticated:
         return redirect(url_for('main.login'))
     teachers = controller.get_teachers()
-    faculties = controller.get_faculties()
+    faculty = controller.get_faculty()
     classes = controller.get_classes()
-    return render_template('index.html', teachers=teachers, faculties=faculties, classes=classes)
+    salaries, total_salary = controller.calculate_salary()
+    return render_template('index.html', teachers=teachers, faculty=faculty, classes=classes, total_salary=total_salary)
 
 @bp.route('/teachers', methods=['GET', 'POST'])
 @login_required
@@ -72,87 +73,105 @@ def teachers():
                 flash(str(e), 'error')
         return redirect(url_for('main.teachers'))
     
+    search = request.args.get('search', '').strip()
     teachers = controller.get_teachers()
+    if search:
+        teachers = [t for t in teachers if search.lower() in str(t[0]).lower() or search.lower() in t[1].lower()]
+        
     degrees = controller.get_teachers_with_degrees_info()
-    faculties = controller.get_faculties()
+    faculty = controller.get_faculty()
     classes = controller.get_classes()
-    return render_template('teachers.html', teachers=teachers, degrees=degrees, faculties=faculties, classes=classes)
+    return render_template('teachers.html', teachers=teachers, degrees=degrees, faculty=faculty, classes=classes)
 
 @bp.route('/degrees', methods=['GET', 'POST'])
 @login_required
 def degrees():
+    teachers_with_degrees = controller.get_teachers_with_degrees_info()
+    degree_types = ['Thạc sĩ', 'Tiến sĩ', 'Phó Giáo Sư', 'Giáo sư']
+    edit_degree = None
+    message = None
+
     if request.method == 'POST':
-        if 'add_degree' in request.form:
-            teacher_id = int(request.form['teacher_id'])
-            degree_name = request.form['degree_name']
-            try:
-                controller.add_degree(degree_name, teacher_id)
-                flash('Thêm bằng cấp thành công!', 'success')
-            except Exception as e:
-                flash(str(e), 'error')
-        elif 'edit_degree' in request.form:
+        if 'edit_id' in request.form:  # Khi ấn nút Sửa
+            edit_id = int(request.form['edit_id'])
+            for teacher in teachers_with_degrees:
+                if teacher[2] == edit_id:  # Tìm bằng cấp cần sửa
+                    edit_degree = {
+                        'id': teacher[2],
+                        'name': teacher[3],
+                        'teacher_id': teacher[0],
+                        'teacher_name': teacher[1]
+                    }
+                    break
+        elif 'save_edit' in request.form:  # Khi lưu thay đổi
             degree_id = int(request.form['degree_id'])
             degree_name = request.form['degree_name']
             try:
                 controller.update_degree(degree_id, degree_name)
-                flash('Chỉnh sửa bằng cấp thành công!', 'success')
+                message = "Cập nhật bằng cấp thành công!"
             except Exception as e:
-                flash(str(e), 'error')
-        return redirect(url_for('main.degrees'))
-    
-    teachers_with_degrees = controller.get_teachers_with_degrees_info()
-    degree_types = ['Thạc sĩ', 'Tiến sĩ', 'Giáo sư', 'Phó giáo sư', 'Cử nhân']
-    return render_template('degrees.html', teachers_with_degrees=teachers_with_degrees, degree_types=degree_types)
+                message = str(e)
+            return redirect(url_for('main.degrees'))
+
+    return render_template(
+        'degrees.html',
+        teachers_with_degrees=teachers_with_degrees,
+        degree_types=degree_types,
+        edit_degree=edit_degree,
+        message=message
+    )
 
 @bp.route('/faculty', methods=['GET', 'POST'])
 @login_required
 def faculty():
+    faculties = controller.get_faculty()
     edit_faculty = None
     message = None
 
     if request.method == 'POST':
-        if 'edit_id' in request.form:
+        if 'edit_id' in request.form:  # Khi ấn nút Sửa
             edit_id = int(request.form['edit_id'])
-            faculties = controller.get_faculties()
-            edit_faculty = next((f for f in faculties if f[0] == edit_id), None)
-        elif 'save_edit' in request.form:
+            for faculty in faculties:
+                if faculty['id'] == edit_id:
+                    edit_faculty = faculty
+                    break
+        elif 'save_edit' in request.form:  # Khi lưu thay đổi
             faculty_id = int(request.form['faculty_id'])
-            faculty_name = request.form['name']
+            name = request.form['name']
             abbreviation = request.form['abbreviation']
-            description = request.form.get('description', None)
-            controller.update_faculty(faculty_id, faculty_name, abbreviation, description)
-            flash('Chỉnh sửa khoa thành công!', 'success')
+            description = request.form['description']
+            controller.update_faculty(faculty_id, name, abbreviation, description)
+            message = "Cập nhật thông tin khoa thành công!"
             return redirect(url_for('main.faculty'))
-        else:
-            faculty_name = request.form['name']
-            abbreviation = request.form['abbreviation']
-            description = request.form.get('description', None)
-            controller.add_faculty(faculty_name, abbreviation, description)
-            flash('Thêm khoa thành công!', 'success')
-            return redirect(url_for('main.faculty'))
-
-    search_query = request.args.get('search', '').strip()
-    faculties = controller.get_faculties()
-    
-    if search_query:
-        filtered_faculties = [
-            faculty for faculty in faculties
-            if search_query.lower() in faculty[1].lower() or search_query.lower() in faculty[2].lower()
-        ]
-        if filtered_faculties:
-            message = f"Đã tìm thấy {len(filtered_faculties)} khoa phù hợp."
-        else:
-            message = "Không tìm thấy khoa nào phù hợp."
-        faculties = filtered_faculties
 
     return render_template('faculty.html', faculties=faculties, edit_faculty=edit_faculty, message=message)
 
-@bp.route('/faculty/delete/<int:id>', methods=['GET'])
+@bp.route('/faculty/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-def delete_faculty(id):
-    controller.delete_faculty(id)
-    flash('Xóa khoa thành công!', 'success')
-    return redirect(url_for('main.faculty'))
+def edit_faculty(id):
+    faculties = controller.get_faculty()
+    # Tìm faculty cần sửa
+    edit_faculty = None
+    for fac in faculties:
+        if fac[0] == id or getattr(fac, 'id', None) == id:
+            # Nếu là tuple (id, name), bạn cần lấy đúng thông tin
+            edit_faculty = {
+                'id': fac[0],
+                'name': fac[1],
+                'abbreviation': getattr(fac, 'abbreviation', ''),
+                'description': getattr(fac, 'description', '')
+            }
+            break
+
+    if request.method == 'POST':
+        name = request.form['name']
+        abbreviation = request.form.get('abbreviation', '')
+        description = request.form.get('description', '')
+        # Bạn cần viết hàm update_faculty trong controller và model
+        controller.update_faculty(id, name, abbreviation, description)
+        return redirect(url_for('main.faculty'))
+
+    return render_template('faculty.html', faculties=faculties, edit_faculty=edit_faculty)
 
 @bp.route('/classes', methods=['GET', 'POST'])
 @login_required
@@ -162,17 +181,15 @@ def classes():
             teacher_id = int(request.form['teacher_id'])
             faculty_id = int(request.form['faculty_id'])
             controller.add_class(teacher_id, faculty_id)
-            flash('Thêm lớp học thành công!', 'success')
         elif 'delete' in request.form:
             class_id = int(request.form['class_id'])
             controller.delete_class(class_id)
-            flash('Xóa lớp học thành công!', 'success')
         return redirect(url_for('main.classes'))
     
     teachers = controller.get_teachers()
-    faculties = controller.get_faculties()
+    faculty = controller.get_faculty()
     classes = controller.get_classes()
-    return render_template('classes.html', teachers=teachers, faculties=faculties, classes=classes)
+    return render_template('classes.html', teachers=teachers, faculty=faculty, classes=classes)
 
 @bp.route('/salary')
 @login_required
@@ -187,8 +204,13 @@ def reports():
     if request.method == 'POST':
         details = request.form['details']
         controller.add_report(details)
-        flash('Thêm báo cáo thành công!', 'success')
         return redirect(url_for('main.reports'))
     
     reports = controller.get_reports()
     return render_template('reports.html', reports=reports)
+
+@bp.route('/faculty/delete/<int:id>', methods=['GET'])
+@login_required
+def delete_faculty(id):
+    controller.delete_faculty(id)
+    return redirect(url_for('main.faculty'))

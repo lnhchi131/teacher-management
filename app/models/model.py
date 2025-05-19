@@ -17,13 +17,10 @@ class Model:
         self.connection = None
         try:
             self.connection = mysql.connector.connect(
-                host="mysql-34fa5599-scvgden-9e65.b.aivencloud.com",
-                port=10023,
-                user="avnadmin",
-                password="AVNS_OeD2WJJNW4UHZZOtCEi",
-                database="teacher_management",
-                ssl_ca=None,
-                ssl_verify_cert=False
+                host="localhost",
+                user="root",  # Thay bằng username MySQL của bạn
+                password="Hanbin22@",  # Thay bằng password MySQL của bạn
+                database="teacher_management"
             )
         except Error as e:
             print(f"Error connecting to MySQL: {e}")
@@ -75,8 +72,11 @@ class Model:
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
+        # Xóa các bản ghi liên quan trong bảng classes trước
         cursor.execute("DELETE FROM classes WHERE teacher_id = %s", (teacher_id,))
+        # Xóa bằng cấp của giáo viên (nếu có)
         cursor.execute("DELETE FROM degrees WHERE teacher_id = %s", (teacher_id,))
+        # Xóa giáo viên
         cursor.execute("DELETE FROM teachers WHERE id = %s", (teacher_id,))
         self.connection.commit()
         cursor.close()
@@ -108,6 +108,7 @@ class Model:
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
+        # Lấy tất cả giáo viên, kể cả những người chưa có bằng cấp
         cursor.execute("""
             SELECT t.id, t.name, d.id, d.name 
             FROM teachers t 
@@ -125,7 +126,7 @@ class Model:
         self.connection.commit()
         cursor.close()
 
-    def add_faculty(self, name, abbreviation, description=None):
+    def add_faculty(self, name, abbreviation, description):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
@@ -133,21 +134,31 @@ class Model:
         self.connection.commit()
         cursor.close()
 
-    def get_faculties(self):
+    def get_faculty(self):
         if self.connection is None:
             raise Exception("Database connection is not established.")
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor(dictionary=True)
         cursor.execute("SELECT id, name, abbreviation, description FROM faculty")
-        faculties = cursor.fetchall()
+        faculty = cursor.fetchall()
         cursor.close()
-        return faculties
+        return faculty
 
     def delete_faculty(self, faculty_id):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM classes WHERE faculty_id = %s", (faculty_id,))
         cursor.execute("DELETE FROM faculty WHERE id = %s", (faculty_id,))
+        self.connection.commit()
+        cursor.close()
+
+    def update_faculty(self, faculty_id, name, abbreviation, description):
+        if self.connection is None:
+            raise Exception("Database connection is not established.")
+        cursor = self.connection.cursor()
+        cursor.execute(
+            "UPDATE faculty SET name = %s, abbreviation = %s, description = %s WHERE id = %s",
+            (name, abbreviation, description, faculty_id)
+        )
         self.connection.commit()
         cursor.close()
 
@@ -195,10 +206,10 @@ class Model:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT c.id, t.name, f.name
+            SELECT c.id, t.name, co.name
             FROM classes c
             JOIN teachers t ON c.teacher_id = t.id
-            JOIN faculty f ON c.faculty_id = f.id
+            JOIN faculty co ON c.faculty_id = co.id
         """)
         classes = cursor.fetchall()
         cursor.close()
