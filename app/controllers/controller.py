@@ -35,14 +35,17 @@ class Controller:
     def delete_degree(self, degree_id):
         self.model.delete_degree(degree_id)
 
-    def get_courses(self):
-        return self.model.get_courses()
+    def get_faculty(self):
+        return self.model.get_faculty()
 
-    def add_course(self, course_name):
-        self.model.add_course(course_name)
+    def add_faculty(self, name, abbreviation, description):
+        self.model.add_faculty(name, abbreviation, description)
 
-    def delete_course(self, course_id):
-        self.model.delete_course(course_id)
+    def delete_faculty(self, faculty_id):
+        self.model.delete_faculty(faculty_id)
+
+    def update_faculty(self, faculty_id, name, abbreviation, description):
+        self.model.update_faculty(faculty_id, name, abbreviation, description)
 
     def calculate_salary(self):
         teachers = self.model.get_teachers_with_degrees()
@@ -64,8 +67,8 @@ class Controller:
             })
         return salaries, total_salary
 
-    def add_class(self, teacher_id, course_id):
-        self.model.add_class(teacher_id, course_id)
+    def add_class(self, teacher_id, faculty_id):
+        self.model.add_class(teacher_id, faculty_id)
 
     def get_classes(self):
         return self.model.get_classes()

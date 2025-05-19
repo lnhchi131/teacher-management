@@ -19,6 +19,10 @@
             <h4 class="text-center mb-4">Quản lý Giáo viên</h4>
             <ul class="nav flex-column">
                 <li class="nav-item">
+                    <a class="nav-link text-white" href="{{ url_for('main.index') }}">
+                        <i class="fas fa-user-graduate me-2"></i> Home
+                    </a>
+                <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('main.teachers') }}">
                         <i class="fas fa-chalkboard-teacher me-2"></i> Giáo viên
                     </a>
@@ -29,7 +33,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ url_for('main.courses') }}">
+                    <a class="nav-link text-white" href="{{ url_for('main.faculty') }}">
                         <i class="fas fa-book me-2"></i> Khoa
                     </a>
                 </li>

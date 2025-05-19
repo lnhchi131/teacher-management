@@ -19,7 +19,7 @@ class Model:
             self.connection = mysql.connector.connect(
                 host="localhost",
                 user="root",  # Thay bằng username MySQL của bạn
-                password="2T!Exp.999%",  # Thay bằng password MySQL của bạn
+                password="Hanbin22@",  # Thay bằng password MySQL của bạn
                 database="teacher_management"
             )
         except Error as e:
@@ -126,28 +126,39 @@ class Model:
         self.connection.commit()
         cursor.close()
 
-    def add_course(self, name):
+    def add_faculty(self, name, abbreviation, description):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO courses (name) VALUES (%s)", (name,))
+        cursor.execute("INSERT INTO faculty (name, abbreviation, description) VALUES (%s, %s, %s)", (name, abbreviation, description))
         self.connection.commit()
         cursor.close()
 
-    def get_courses(self):
+    def get_faculty(self):
         if self.connection is None:
             raise Exception("Database connection is not established.")
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT id, name FROM courses")
-        courses = cursor.fetchall()
+        cursor = self.connection.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, abbreviation, description FROM faculty")
+        faculty = cursor.fetchall()
         cursor.close()
-        return courses
+        return faculty
 
-    def delete_course(self, course_id):
+    def delete_faculty(self, faculty_id):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM courses WHERE id = %s", (course_id,))
+        cursor.execute("DELETE FROM faculty WHERE id = %s", (faculty_id,))
+        self.connection.commit()
+        cursor.close()
+
+    def update_faculty(self, faculty_id, name, abbreviation, description):
+        if self.connection is None:
+            raise Exception("Database connection is not established.")
+        cursor = self.connection.cursor()
+        cursor.execute(
+            "UPDATE faculty SET name = %s, abbreviation = %s, description = %s WHERE id = %s",
+            (name, abbreviation, description, faculty_id)
+        )
         self.connection.commit()
         cursor.close()
 
@@ -182,11 +193,11 @@ class Model:
         cursor.close()
         return count
 
-    def add_class(self, teacher_id, course_id):
+    def add_class(self, teacher_id, faculty_id):
         if self.connection is None:
             raise Exception("Database connection is not established.")
         cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO classes (teacher_id, course_id) VALUES (%s, %s)", (teacher_id, course_id))
+        cursor.execute("INSERT INTO classes (teacher_id, faculty_id) VALUES (%s, %s)", (teacher_id, faculty_id))
         self.connection.commit()
         cursor.close()
 
@@ -198,7 +209,7 @@ class Model:
             SELECT c.id, t.name, co.name
             FROM classes c
             JOIN teachers t ON c.teacher_id = t.id
-            JOIN courses co ON c.course_id = co.id
+            JOIN faculty co ON c.faculty_id = co.id
         """)
         classes = cursor.fetchall()
         cursor.close()
