@@ -2,137 +2,126 @@
 {% block content %}
 <div class="card shadow-sm">
     <div class="card-body">
-        <h2 class="mb-4">Giáo Viên</h2>
+        <h1 class="card-title">Danh sách Giáo viên</h1>
         <div class="d-flex justify-content-between mb-3">
-            <form method="GET" class="d-flex" action="{{ url_for('main.teachers') }}">
-                <input type="text" class="form-control w-25 me-2" name="search" placeholder="Tìm kiếm theo mã hoặc tên" value="{{ request.args.get('search', '') }}">
-                <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
-                {% if request.args.get('search') %}
-                <a href="{{ url_for('main.teachers') }}" class="btn btn-secondary">Xem tất cả</a>
-                {% endif %}
-            </form>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTeacherModal">Thêm mới</button>
+            <input type="text" class="form-control w-25" placeholder="Tìm kiếm theo mã hoặc tên">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal">Thêm mới</button>
         </div>
-        {% if request.args.get('search') %}
-            {% if teachers|length > 0 %}
-                <div class="alert alert-success mb-2">
-                    Đã tìm thấy {{ teachers|length }} giáo viên.
-                </div>
-            {% else %}
-                <div class="alert alert-warning mb-2">
-                    Không có giáo viên nào.
-                </div>
-            {% endif %}
-        {% endif %}
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên</th>
-                        <th>Ngày sinh</th>
-                        <th>Bằng cấp</th>
-                        <th>Khoa</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for teacher in teachers %}
-                    <tr>
-                        <td>{{ teacher[0] }}</td>
-                        <td>{{ teacher[1] }}</td>
-                        <td>{{ teacher[2] }}</td>
-                        <td>
-                            {% for degree in degrees %}
-                                {% if degree[0] == teacher[0] %}
-                                    {{ degree[3] if degree[3] else 'Chưa có bằng cấp' }}
-                                {% endif %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã GV</th>
+                    <th>Họ tên</th>
+                    <th>Ngày sinh</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Khoa</th>
+                    <th>Bằng cấp</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                <tr>
+                    <td>{{ teacher.code }}</td>
+                    <td>{{ teacher.name }}</td>
+                    <td>{{ teacher.birth_date }}</td>
+                    <td>{{ teacher.phone }}</td>
+                    <td>{{ teacher.email }}</td>
+                    <td>
+                        {% set teacher_classes = classes | selectattr('teacher_name', 'equalto', teacher.name) | list %}
+                        {% if teacher_classes %}
+                            {% for class in teacher_classes %}
+                                {{ class.faculty_name }}{% if not loop.last %}, {% endif %}
                             {% endfor %}
-                        </td>
-                        <td>
-                            {% for class in classes %}
-                                {% if class[1] == teacher[1] %}
-                                    {% for fac in faculty %}
-                                        {% if fac[0] == class[2] %}
-                                            {{ fac[1] }}{% if not loop.last %}, {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            <form method="POST" class="d-inline">
-                                <input type="hidden" name="edit_id" value="{{ teacher[0] }}">
-                                <button type="submit" class="btn btn-warning btn-sm">Sửa</button>
-                            </form>
-                            <form method="POST" class="d-inline ms-1">
-                                <input type="hidden" name="teacher_id" value="{{ teacher[0] }}">
-                                <button type="submit" name="delete_teacher" class="btn btn-danger btn-sm">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% else %}
+                            Chưa có
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set teacher_degree = degrees | selectattr('id', 'equalto', teacher.id) | first %}
+                        {{ teacher_degree.degree_name if teacher_degree and teacher_degree.degree_name else 'Chưa có' }}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('main.edit_teacher', id=teacher.id) }}" class="btn btn-warning btn-sm">Sửa</a>
+                        <a href="{{ url_for('main.delete_teacher', id=teacher.id) }}" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Phân trang -->
+        <div class="d-flex justify-content-center">
+            {{ pagination.links }}
         </div>
     </div>
 </div>
 
-<!-- Modal Thêm Giáo viên -->
-<div class="modal fade" id="addTeacherModal" tabindex="-1" aria-labelledby="addTeacherModalLabel" aria-hidden="true">
+<!-- Modal để Thêm/Sửa Giáo viên -->
+<div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addTeacherModalLabel">Thêm Giáo viên</h5>
+                <h5 class="modal-title" id="teacherModalLabel">{% if edit_teacher %}Sửa Giáo viên{% else %}Thêm Giáo viên{% endif %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url_for('main.teachers') }}">
+            <form method="POST" action="{{ url_for('main.teachers') if not edit_teacher else url_for('main.edit_teacher', id=edit_teacher.id) }}">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="code" class="form-label">Mã giáo viên:</label>
-                        <input type="text" class="form-control" id="code" name="code" placeholder="Nhập mã giáo viên" required>
+                        <input type="text" class="form-control" id="code" name="code" value="{{ edit_teacher.code if edit_teacher else '' }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="teacher_name" class="form-label">Họ tên:</label>
-                        <input type="text" class="form-control" id="teacher_name" name="teacher_name" placeholder="Nhập họ tên" required>
+                        <label for="full_name" class="form-label">Họ tên:</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ edit_teacher.name if edit_teacher else '' }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="birth_date" class="form-label">Ngày sinh:</label>
-                        <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                        <input type="date" class="form-control" id="birth_date" name="birth_date" value="{{ edit_teacher.birth_date if edit_teacher else '' }}">
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">SĐT:</label>
-                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Nhập số điện thoại">
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ edit_teacher.phone if edit_teacher else '' }}">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email">
+                        <input type="email" class="form-control" id="email" name="email" value="{{ edit_teacher.email if edit_teacher else '' }}">
                     </div>
                     <div class="mb-3">
                         <label for="faculty_id" class="form-label">Khoa:</label>
-                        <select class="form-select" id="faculty_id" name="faculty_id" required>
+                        <select class="form-select" id="faculty_id" name="faculty_id">
                             <option value="">Chọn khoa</option>
                             {% for faculty in faculties %}
-                            <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                            <option value="{{ faculty.id }}" {% if edit_teacher and edit_teacher.id in classes | selectattr('teacher_name', 'equalto', edit_teacher.name) | map(attribute='id') | list %}selected{% endif %}>{{ faculty.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="degree_id" class="form-label">Bằng cấp:</label>
-                        <select class="form-select" id="degree_id" name="degree_id" required>
+                        <select class="form-select" id="degree_id" name="degree_id">
                             <option value="">Chọn bằng cấp</option>
-                            {% for degree in degrees %}
-                            <option value="{{ degree.id }}">{{ degree.name }}</option>
+                            {% for degree_type in degree_types %}
+                            <option value="{{ degree_type }}" {% if edit_teacher and degrees | selectattr('id', 'equalto', edit_teacher.id) | first and degrees | selectattr('id', 'equalto', edit_teacher.id) | first.degree_name == degree_type %}selected{% endif %}>{{ degree_type }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" name="add_teacher" class="btn btn-success">Thêm giáo viên</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    // Tự động mở modal khi có dữ liệu sửa
+    {% if edit_teacher %}
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = new bootstrap.Modal(document.getElementById('teacherModal'));
+        modal.show();
+    });
+    {% endif %}
+</script>
 {% endblock %}

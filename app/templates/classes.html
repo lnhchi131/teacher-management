@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="mb-4">Danh sách Lớp học</h2>
+        <div class="d-flex justify-content-between mb-3">
+            <form method="GET" class="d-flex">
+                <input type="text" class="form-control w-25 me-2" name="search" placeholder="Tìm kiếm theo giáo viên hoặc khoa" value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+                {% if request.args.get('search') %}
+                <a href="{{ url_for('main.classes') }}" class="btn btn-secondary">Xem tất cả</a>
+                {% endif %}
+            </form>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClassModal">Thêm mới</button>
+        </div>
+
+        <!-- Hiển thị thông báo -->
+        {% if message %}
+        <div class="alert alert-{{ 'success' if 'Đã tìm thấy' in message else 'warning' }} mb-2">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên lớp học</th>
+                        <th>Giáo viên</th>
+                        <th>Khoa</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class in classes %}
+                    <tr>
+                        <td>{{ class.id }}</td>
+                        <td>{{ class.name }}</td>
+                        <td>{{ class.teacher_name }}</td>
+                        <td>{{ class.faculty_name }}</td>
+                        <td>
+                            <a href="{{ url_for('main.delete_class', id=class.id) }}" class="btn btn-danger btn-sm">Xóa</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Phân trang -->
+            <div class="d-flex justify-content-center">
+                {{ pagination.links }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Lớp học -->
+<div class="modal fade" id="addClassModal" tabindex="-1" aria-labelledby="addClassModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addClassModalLabel">Thêm Lớp học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('main.classes') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên lớp học:</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên lớp học (VD: Toán Cao cấp, Lập trình C++)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacher_id" class="form-label">Giáo viên:</label>
+                        <select class="form-select" id="teacher_id" name="teacher_id" required>
+                            <option value="">Chọn giáo viên</option>
+                            {% for teacher in teachers %}
+                            <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="faculty_id" class="form-label">Khoa:</label>
+                        <select class="form-select" id="faculty_id" name="faculty_id" required>
+                            <option value="">Chọn khoa</option>
+                            {% for faculty in faculties %}
+                            <option value="{{ faculty.id }}">{{ faculty.name }} ({{ faculty.abbreviation }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" name="add" class="btn btn-success">Thêm Lớp học</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

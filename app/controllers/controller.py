@@ -14,11 +14,11 @@ class Controller:
     def get_teachers(self):
         return self.model.get_teachers()
 
-    def add_teacher(self, teacher_name, birth_date):
-        return self.model.add_teacher(teacher_name, birth_date)
+    def add_teacher(self, code, full_name, birth_date, phone, email):
+        return self.model.add_teacher(code, full_name, birth_date, phone, email)
 
-    def update_teacher(self, teacher_id, teacher_name, birth_date):
-        self.model.update_teacher(teacher_id, teacher_name, birth_date)
+    def update_teacher(self, teacher_id, code, full_name, birth_date, phone, email):
+        self.model.update_teacher(teacher_id, code, full_name, birth_date, phone, email)
 
     def delete_teacher(self, teacher_id):
         self.model.delete_teacher(teacher_id)
@@ -29,17 +29,20 @@ class Controller:
     def add_degree(self, degree_name, teacher_id):
         self.model.add_degree(degree_name, teacher_id)
 
-    def update_degree(self, degree_id, degree_name):
-        self.model.update_degree(degree_id, degree_name)
+    def update_degree(self, teacher_id, degree_name):
+        self.model.update_degree(teacher_id, degree_name)
 
-    def delete_degree(self, degree_id):
-        self.model.delete_degree(degree_id)
+    def delete_degree(self, teacher_id):
+        self.model.delete_degree(teacher_id)
 
     def add_faculty(self, faculty_name, abbreviation, description=None):
         self.model.add_faculty(faculty_name, abbreviation, description)
 
     def get_faculties(self):
         return self.model.get_faculties()
+
+    def update_faculty(self, faculty_id, faculty_name, abbreviation, description=None):
+        self.model.update_faculty(faculty_id, faculty_name, abbreviation, description)
 
     def delete_faculty(self, faculty_id):
         self.model.delete_faculty(faculty_id)
@@ -49,9 +52,9 @@ class Controller:
         salaries = []
         total_salary = 0
         for teacher in teachers:
-            teacher_id = teacher[0]
-            teacher_name = teacher[1]
-            degree_name = teacher[2] if teacher[2] else 'Cử nhân'
+            teacher_id = teacher['id']
+            teacher_name = teacher['name']
+            degree_name = teacher['degree_name'] if teacher['degree_name'] else 'Cử nhân'
             hours = self.model.get_class_count_by_teacher(teacher_id)
             degree_coefficient = {'Cử nhân': 1.0, 'Thạc sĩ': 1.2, 'Tiến sĩ': 1.5, 'Giáo sư': 2.0, 'Phó giáo sư': 1.8}.get(degree_name, 1.0)
             salary_amount = hours * 50000 * degree_coefficient  # 50,000 VNĐ/giờ
@@ -64,8 +67,8 @@ class Controller:
             })
         return salaries, total_salary
 
-    def add_class(self, teacher_id, faculty_id):
-        self.model.add_class(teacher_id, faculty_id)
+    def add_class(self, name, teacher_id, faculty_id):
+        self.model.add_class(name, teacher_id, faculty_id)
 
     def get_classes(self):
         return self.model.get_classes()
