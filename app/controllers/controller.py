@@ -1,12 +1,11 @@
 from app.models.model import Model
 
+# Khởi tạo một instance Model duy nhất
+model = Model()
+
 class Controller:
     def __init__(self):
-        try:
-            self.model = Model()
-        except Exception as e:
-            print(f"Failed to initialize Model: {e}")
-            raise
+        self.model = model
 
     def verify_user(self, username, password):
         return self.model.verify_user(username, password)
@@ -29,8 +28,8 @@ class Controller:
     def add_degree(self, degree_name, teacher_id):
         self.model.add_degree(degree_name, teacher_id)
 
-    def update_degree(self, teacher_id, degree_name):
-        self.model.update_degree(teacher_id, degree_name)
+    def update_degree(self, degree_id, degree_name):
+        self.model.update_degree(degree_id, degree_name)
 
     def delete_degree(self, teacher_id):
         self.model.delete_degree(teacher_id)
@@ -67,8 +66,8 @@ class Controller:
             })
         return salaries, total_salary
 
-    def add_class(self, name, teacher_id, faculty_id):
-        self.model.add_class(name, teacher_id, faculty_id)
+    def add_class(self, teacher_id, faculty_id):
+        self.model.add_class(teacher_id, faculty_id)
 
     def get_classes(self):
         return self.model.get_classes()

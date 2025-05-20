@@ -26,24 +26,28 @@
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Tên lớp học</th>
                         <th>Giáo viên</th>
                         <th>Khoa</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for class in classes %}
+                    {% if classes %}
+                        {% for class in classes %}
+                        <tr>
+                            <td>{{ class.id }}</td>
+                            <td>{{ class.teacher_name }}</td>
+                            <td>{{ class.faculty_name }}</td>
+                            <td>
+                                <a href="{{ url_for('main.delete_class', id=class.id) }}" class="btn btn-danger btn-sm">Xóa</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
                     <tr>
-                        <td>{{ class.id }}</td>
-                        <td>{{ class.name }}</td>
-                        <td>{{ class.teacher_name }}</td>
-                        <td>{{ class.faculty_name }}</td>
-                        <td>
-                            <a href="{{ url_for('main.delete_class', id=class.id) }}" class="btn btn-danger btn-sm">Xóa</a>
-                        </td>
+                        <td colspan="4" class="text-center">Không có lớp học nào để hiển thị.</td>
                     </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
             <!-- Phân trang -->
@@ -64,10 +68,6 @@
             </div>
             <form method="POST" action="{{ url_for('main.classes') }}">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Tên lớp học:</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên lớp học (VD: Toán Cao cấp, Lập trình C++)" required>
-                    </div>
                     <div class="mb-3">
                         <label for="teacher_id" class="form-label">Giáo viên:</label>
                         <select class="form-select" id="teacher_id" name="teacher_id" required>

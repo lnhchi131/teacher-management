@@ -24,16 +24,16 @@ login_manager.login_view = 'main.login'
 cache = Cache()
 cache.init_app(app)
 
+# Khởi tạo một instance Model duy nhất
+model = Model()
+
 # Load user từ ID
 @login_manager.user_loader
 def load_user(user_id):
-    model = Model()
-    cursor = model.connection.cursor()
-    cursor.execute("SELECT id, username FROM users WHERE id = %s", (int(user_id),))
-    user_data = cursor.fetchone()
-    cursor.close()
+    global model
+    user_data = model.get_user_by_username_by_id(int(user_id))
     if user_data:
-        return User(user_data[0], user_data[1])
+        return User(user_data['id'], user_data['username'])
     return None
 
 # Đăng ký các route

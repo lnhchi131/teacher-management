@@ -65,6 +65,9 @@ def teachers():
             email = request.form['email']
             faculty_id = request.form['faculty_id']
             degree_name = request.form['degree_id']
+            if not code or not full_name or not birth_date:
+                flash('Vui lòng điền đầy đủ mã, họ tên và ngày sinh!', 'error')
+                return redirect(url_for('main.teachers'))
             try:
                 teacher_id = controller.add_teacher(code, full_name, birth_date, phone, email)
                 if faculty_id:
@@ -115,13 +118,16 @@ def edit_teacher(id):
     email = request.form['email']
     faculty_id = request.form['faculty_id']
     degree_name = request.form['degree_id']
+    if not code or not full_name or not birth_date:
+        flash('Vui lòng điền đầy đủ mã, họ tên và ngày sinh!', 'error')
+        return redirect(url_for('main.teachers'))
     try:
         controller.update_teacher(id, code, full_name, birth_date, phone, email)
         if faculty_id:
             controller.delete_class_by_teacher(id)
             controller.add_class(id, int(faculty_id))
         if degree_name:
-            controller.update_degree(id, degree_name)
+            controller.add_degree(degree_name, id)
         flash('Chỉnh sửa giáo viên thành công!', 'success')
         cache.delete('teachers')
         cache.delete('classes')
@@ -132,34 +138,56 @@ def edit_teacher(id):
 @bp.route('/delete_teacher/<int:id>', methods=['GET'])
 @login_required
 def delete_teacher(id):
-    controller.delete_teacher(id)
-    flash('Xóa giáo viên thành công!', 'success')
-    cache.delete('teachers')
-    cache.delete('classes')
+    try:
+        controller.delete_teacher(id)
+        flash('Xóa giáo viên thành công!', 'success')
+        cache.delete('teachers')
+        cache.delete('classes')
+    except Exception as e:
+        flash(str(e), 'error')
     return redirect(url_for('main.teachers'))
 
 @bp.route('/degrees', methods=['GET', 'POST'])
 @login_required
 def degrees():
+    edit_teacher = None
     if request.method == 'POST':
-        if 'add_degree' in request.form:
-            teacher_id = int(request.form['teacher_id'])
+        if 'edit_id' in request.form:
+            edit_id = int(request.form['edit_id'])
+            teachers_with_degrees = controller.get_teachers_with_degrees_info()
+            edit_teacher = next((t for t in teachers_with_degrees if t['id'] == edit_id), None)
+        elif 'add_degree' in request.form:
+            teacher_id = request.form['teacher_id']
             degree_name = request.form['degree_name']
+            if not teacher_id:
+                flash('Vui lòng chọn giáo viên!', 'error')
+                return redirect(url_for('main.degrees'))
+            if not degree_name:
+                flash('Vui lòng chọn bằng cấp!', 'error')
+                return redirect(url_for('main.degrees'))
             try:
-                controller.add_degree(degree_name, teacher_id)
+                controller.add_degree(degree_name, int(teacher_id))
                 flash('Thêm bằng cấp thành công!', 'success')
                 cache.delete('teachers_with_degrees')
             except Exception as e:
                 flash(str(e), 'error')
+            return redirect(url_for('main.degrees'))
         elif 'edit_degree' in request.form:
-            degree_id = int(request.form['degree_id'])
+            degree_id = request.form['degree_id']
             degree_name = request.form['degree_name']
+            if not degree_id:
+                flash('Không tìm thấy bằng cấp để chỉnh sửa!', 'error')
+                return redirect(url_for('main.degrees'))
+            if not degree_name:
+                flash('Vui lòng chọn bằng cấp!', 'error')
+                return redirect(url_for('main.degrees'))
             try:
-                controller.update_degree(degree_id, degree_name)
+                controller.update_degree(int(degree_id), degree_name)
                 flash('Chỉnh sửa bằng cấp thành công!', 'success')
                 cache.delete('teachers_with_degrees')
             except Exception as e:
                 flash(str(e), 'error')
+            return redirect(url_for('main.degrees'))
         return redirect(url_for('main.degrees'))
     
     teachers_with_degrees = cache.get('teachers_with_degrees')
@@ -167,8 +195,11 @@ def degrees():
         teachers_with_degrees = controller.get_teachers_with_degrees_info()
         cache.set('teachers_with_degrees', teachers_with_degrees)
 
+    # Ghi log dữ liệu để kiểm tra
+    print("Teachers with degrees:", teachers_with_degrees)
+
     degree_types = ['Thạc sĩ', 'Tiến sĩ', 'Giáo sư', 'Phó giáo sư', 'Cử nhân']
-    return render_template('degrees.html', teachers_with_degrees=teachers_with_degrees, degree_types=degree_types)
+    return render_template('degrees.html', teachers_with_degrees=teachers_with_degrees, degree_types=degree_types, edit_teacher=edit_teacher)
 
 @bp.route('/faculty', methods=['GET', 'POST'])
 @login_required
@@ -186,6 +217,9 @@ def faculty():
             faculty_name = request.form['name']
             abbreviation = request.form['abbreviation']
             description = request.form.get('description', None)
+            if not faculty_name or not abbreviation:
+                flash('Vui lòng điền đầy đủ tên và viết tắt của khoa!', 'error')
+                return redirect(url_for('main.faculty'))
             controller.update_faculty(faculty_id, faculty_name, abbreviation, description)
             flash('Chỉnh sửa khoa thành công!', 'success')
             cache.delete('faculties')
@@ -194,6 +228,9 @@ def faculty():
             faculty_name = request.form['name']
             abbreviation = request.form['abbreviation']
             description = request.form.get('description', None)
+            if not faculty_name or not abbreviation:
+                flash('Vui lòng điền đầy đủ tên và viết tắt của khoa!', 'error')
+                return redirect(url_for('main.faculty'))
             controller.add_faculty(faculty_name, abbreviation, description)
             flash('Thêm khoa thành công!', 'success')
             cache.delete('faculties')
@@ -221,9 +258,12 @@ def faculty():
 @bp.route('/faculty/delete/<int:id>', methods=['GET'])
 @login_required
 def delete_faculty(id):
-    controller.delete_faculty(id)
-    flash('Xóa khoa thành công!', 'success')
-    cache.delete('faculties')
+    try:
+        controller.delete_faculty(id)
+        flash('Xóa khoa thành công!', 'success')
+        cache.delete('faculties')
+    except Exception as e:
+        flash(str(e), 'error')
     return redirect(url_for('main.faculty'))
 
 @bp.route('/classes', methods=['GET', 'POST'])
@@ -232,12 +272,17 @@ def classes():
     message = None
     if request.method == 'POST':
         if 'add' in request.form:
-            name = request.form['name']
-            teacher_id = int(request.form['teacher_id'])
-            faculty_id = int(request.form['faculty_id'])
-            controller.add_class(name, teacher_id, faculty_id)
-            flash('Thêm lớp học thành công!', 'success')
-            cache.delete('classes')
+            teacher_id = request.form['teacher_id']
+            faculty_id = request.form['faculty_id']
+            if not teacher_id or not faculty_id:
+                flash('Vui lòng điền đầy đủ thông tin lớp học!', 'error')
+                return redirect(url_for('main.classes'))
+            try:
+                controller.add_class(int(teacher_id), int(faculty_id))
+                flash('Thêm lớp học thành công!', 'success')
+                cache.delete('classes')
+            except Exception as e:
+                flash(str(e), 'error')
             return redirect(url_for('main.classes'))
         return redirect(url_for('main.classes'))
     
@@ -281,9 +326,12 @@ def classes():
 @bp.route('/classes/delete/<int:id>', methods=['GET'])
 @login_required
 def delete_class(id):
-    controller.delete_class(id)
-    flash('Xóa lớp học thành công!', 'success')
-    cache.delete('classes')
+    try:
+        controller.delete_class(id)
+        flash('Xóa lớp học thành công!', 'success')
+        cache.delete('classes')
+    except Exception as e:
+        flash(str(e), 'error')
     return redirect(url_for('main.classes'))
 
 @bp.route('/salary')
@@ -298,6 +346,9 @@ def salary():
 def reports():
     if request.method == 'POST':
         details = request.form['details']
+        if not details:
+            flash('Vui lòng nhập nội dung báo cáo!', 'error')
+            return redirect(url_for('main.reports'))
         controller.add_report(details)
         flash('Thêm báo cáo thành công!', 'success')
         return redirect(url_for('main.reports'))
