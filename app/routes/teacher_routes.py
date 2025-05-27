@@ -1,0 +1,70 @@
+from flask import Blueprint, render_template, request, redirect, flash
+from flask_login import login_required, current_user
+from ..controllers.teachers_controller import get_teachers_data, get_teacher_data, add_teacher_data, update_teacher_data, delete_teacher_data, get_teacher_form_data
+from ..controllers.degrees_controller import get_degrees_data
+from ..controllers.faculties_controller import get_faculties_data
+
+bp = Blueprint('teacher_routes', __name__)
+
+@bp.route('/teachers')
+@login_required
+def teachers():
+    teachers = get_teachers_data()
+    degrees = get_degrees_data()
+    faculties = get_faculties_data()
+    stats = [(degree[1], degree[3]) for degree in degrees] + [(faculty[2], faculty[4]) for faculty in faculties]
+    return render_template('teachers.html', teachers=teachers, stats=stats)
+
+@bp.route('/teachers/add', methods=['GET', 'POST'])
+@login_required
+def teachers_add():
+    if current_user.role != 'admin':
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    if request.method == 'POST':
+        add_teacher_data(request.form)
+        flash('Thêm giáo viên thành công!')
+        return redirect('/teachers')
+    form_data = get_teacher_form_data()
+    return render_template('teachers_form.html', departments=form_data['departments'], degrees=form_data['degrees'])
+
+@bp.route('/teachers/edit/<int:teacher_id>', methods=['GET', 'POST'])
+@login_required
+def teachers_edit(teacher_id):
+    if current_user.role != 'admin':
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    if request.method == 'POST':
+        update_teacher_data(request.form)
+        flash('Cập nhật giáo viên thành công!')
+        return redirect('/teachers')
+    teacher = get_teacher_data(teacher_id)
+    form_data = get_teacher_form_data()
+    return render_template('teachers_form.html', teacher=teacher, departments=form_data['departments'], degrees=form_data['degrees'])
+
+@bp.route('/teachers/delete/<int:teacher_id>')
+@login_required
+def teachers_delete(teacher_id):
+    if current_user.role != 'admin':
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    delete_teacher_data(teacher_id)
+    flash('Xóa giáo viên thành công!')
+    return redirect('/teachers')
+
+@bp.route('/profile')
+@login_required
+def teacher_profile():
+    teacher = get_teacher_data(current_user.id)
+    if not teacher:
+        flash('Không tìm thấy thông tin giáo viên!')
+        return redirect('/')
+    return render_template('teacher_profile.html', teacher=teacher)
+
+@bp.route('/stats')
+@login_required
+def stats():
+    degrees = get_degrees_data()
+    faculties = get_faculties_data()
+    stats = [(degree[1], degree[3]) for degree in degrees] + [(faculty[2], faculty[4]) for faculty in faculties]
+    return render_template('stats.html', stats=stats)

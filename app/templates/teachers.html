@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">Danh sách giáo viên</h2>
+{% if current_user.role == 'admin' %}
+<a href="{{ url_for('teacher_routes.teachers_add') }}" class="btn btn-primary mb-3">Thêm giáo viên</a>
+{% endif %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã số</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>Điện thoại</th>
+            <th>Email</th>
+            <th>Khoa</th>
+            <th>Bằng cấp</th>
+            {% if current_user.role == 'admin' %}
+            <th>Hành động</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for teacher in teachers %}
+        <tr>
+            <td>{{ teacher[1] }}</td>
+            <td>{{ teacher[2] }}</td>
+            <td>{{ teacher[3] }}</td>
+            <td>{{ teacher[4] }}</td>
+            <td>{{ teacher[5] }}</td>
+            <td>{{ teacher[6] }}</td>
+            <td>{{ teacher[7] }}</td>
+            {% if current_user.role == 'admin' %}
+            <td>
+                <a href="{{ url_for('teacher_routes.teachers_edit', teacher_id=teacher[0]) }}" class="btn btn-warning btn-sm">Sửa</a>
+                <a href="{{ url_for('teacher_routes.teachers_delete', teacher_id=teacher[0]) }}" class="btn btn-danger btn-sm">Xóa</a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

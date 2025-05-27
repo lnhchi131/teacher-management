@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Giáo viên & Lớp học</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-md-block bg-dark sidebar">
+                <div class="position-sticky pt-3">
+                    <h5 class="text-white text-center">Quản lý</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('routes.index') }}">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link text-white font-weight-bold">Quản lý giáo viên</span>
+                            <ul class="nav flex-column pl-3">
+                                {% if current_user.role == 'admin' %}
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('degree_routes.degrees') }}">Bằng cấp</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('faculty_routes.faculties') }}">Khoa</a>
+                                </li>
+                                {% endif %}
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('teacher_routes.teachers') }}">Giáo viên</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('teacher_routes.stats') }}">Thống kê giáo viên</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link text-white font-weight-bold">Quản lý lớp học</span>
+                            <ul class="nav flex-column pl-3">
+                                {% if current_user.role in ['admin', 'department_admin'] %}
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('class_routes.courses') }}">Học phần</a>
+                                </li>
+                                {% if current_user.role == 'admin' %}
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('class_routes.semesters') }}">Kỳ học</a>
+                                </li>
+                                {% endif %}
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('class_routes.classes') }}">Lớp học</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="{{ url_for('class_routes.class_stats') }}">Thống kê lớp học</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('routes.logout') }}">Đăng xuất</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-info mt-3">
+                            {% for message in messages %}
+                                {{ message }}<br>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>

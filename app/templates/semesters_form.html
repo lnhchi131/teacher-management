@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">{% if semester %}Sửa kỳ học{% else %}Thêm kỳ học{% endif %}</h2>
+<form method="POST" class="mt-3">
+    {% if semester %}
+    <input type="hidden" name="semester_id" value="{{ semester[0] }}">
+    {% endif %}
+    <div class="mb-3">
+        <label class="form-label">Mã kỳ</label>
+        <input type="text" name="code" class="form-control" value="{{ semester[1] if semester else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Năm học</label>
+        <input type="text" name="academic_year" class="form-control" value="{{ semester[2] if semester else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ngày bắt đầu</label>
+        <input type="date" name="start_date" class="form-control" value="{{ semester[3] if semester else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ngày kết thúc</label>
+        <input type="date" name="end_date" class="form-control" value="{{ semester[4] if semester else '' }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">{% if semester %}Cập nhật{% else %}Thêm{% endif %}</button>
+</form>
+{% endblock %}

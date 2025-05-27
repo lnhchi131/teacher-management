@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">{% if teacher %}Sửa giáo viên{% else %}Thêm giáo viên{% endif %}</h2>
+<form method="POST" class="mt-3">
+    {% if teacher %}
+    <input type="hidden" name="teacher_id" value="{{ teacher[0] }}">
+    {% endif %}
+    <div class="mb-3">
+        <label class="form-label">Mã số</label>
+        <input type="text" name="code" class="form-control" value="{{ teacher[1] if teacher else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Họ tên</label>
+        <input type="text" name="full_name" class="form-control" value="{{ teacher[2] if teacher else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ngày sinh</label>
+        <input type="date" name="dob" class="form-control" value="{{ teacher[3] if teacher else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Điện thoại</label>
+        <input type="text" name="phone" class="form-control" value="{{ teacher[4] if teacher else '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ teacher[5] if teacher else '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Khoa</label>
+        <select name="department_id" class="form-control" required>
+            {% for dept in departments %}
+            <option value="{{ dept[0] }}" {% if teacher and teacher[6] == dept[2] %}selected{% endif %}>{{ dept[2] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Bằng cấp</label>
+        <select name="degree_id" class="form-control" required>
+            {% for degree in degrees %}
+            <option value="{{ degree[0] }}" {% if teacher and teacher[7] == degree[1] %}selected{% endif %}>{{ degree[1] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">{% if teacher %}Cập nhật{% else %}Thêm{% endif %}</button>
+</form>
+{% endblock %}

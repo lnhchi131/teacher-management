@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">Danh sách học phần</h2>
+<a href="{{ url_for('class_routes.courses_add') }}" class="btn btn-primary mb-3">Thêm học phần</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã học phần</th>
+            <th>Tên</th>
+            <th>Hệ số</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course[1] }}</td>
+            <td>{{ course[2] }}</td>
+            <td>{{ course[3] }}</td>
+            <td>
+                <a href="{{ url_for('class_routes.courses_edit', course_id=course[0]) }}" class="btn btn-warning btn-sm">Sửa</a>
+                <a href="{{ url_for('class_routes.courses_delete', course_id=course[0]) }}" class="btn btn-danger btn-sm">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

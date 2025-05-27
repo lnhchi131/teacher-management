@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">Danh sách bằng cấp</h2>
+<a href="{{ url_for('degree_routes.degrees_add') }}" class="btn btn-primary mb-3">Thêm bằng cấp</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Hệ số</th>
+            <th>Số giáo viên</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for degree in degrees %}
+        <tr>
+            <td>{{ degree[1] }}</td>
+            <td>{{ degree[2] }}</td>
+            <td>{{ degree[3] }}</td>
+            <td>
+                <a href="{{ url_for('degree_routes.degrees_edit', degree_id=degree[0]) }}" class="btn btn-warning btn-sm">Sửa</a>
+                <a href="{{ url_for('degree_routes.degrees_delete', degree_id=degree[0]) }}" class="btn btn-danger btn-sm">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

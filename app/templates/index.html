@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">Trang chủ</h2>
+<p>Chào mừng đến với hệ thống quản lý giáo viên và lớp học!</p>
+{% if current_user.role == 'teacher' %}
+<p><a href="{{ url_for('teacher_routes.teacher_profile') }}" class="btn btn-primary">Xem thông tin cá nhân</a></p>
+{% endif %}
+{% endblock %}

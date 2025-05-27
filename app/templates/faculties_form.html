@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">{% if faculty %}Sửa khoa{% else %}Thêm khoa{% endif %}</h2>
+<form method="POST" class="mt-3">
+    {% if faculty %}
+    <input type="hidden" name="faculty_id" value="{{ faculty[0] }}">
+    {% endif %}
+    <div class="mb-3">
+        <label class="form-label">Mã khoa</label>
+        <input type="text" name="code" class="form-control" value="{{ faculty[1] if faculty else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tên</label>
+        <input type="text" name="name" class="form-control" value="{{ faculty[2] if faculty else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nhiệm vụ</label>
+        <textarea name="mission" class="form-control">{{ faculty[3] if faculty else '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">{% if faculty %}Cập nhật{% else %}Thêm{% endif %}</button>
+</form>
+{% endblock %}
