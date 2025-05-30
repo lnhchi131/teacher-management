@@ -5,14 +5,17 @@ from ..models.classes_model import get_classes, add_class, update_class, delete_
 from ..models.model import get_db_connection
 
 def get_courses_data():
-    department_id = session.get('department_id') if session['role'] == 'department_admin' else None
+    # Kiểm tra xem session['role'] có tồn tại không
+    role = session.get('role')
+    department_id = session.get('department_id') if role == 'department_admin' else None
     return get_courses(department_id)
 
 def add_course_data(form_data):
     code = form_data['code']
     name = form_data['name']
     coefficient = float(form_data['coefficient'])
-    department_id = form_data['department_id'] if session['role'] == 'admin' else session.get('department_id')
+    role = session.get('role')
+    department_id = form_data['department_id'] if role == 'admin' else session.get('department_id')
     add_course(code, name, coefficient, department_id)
     return True
 
@@ -21,7 +24,8 @@ def update_course_data(form_data):
     code = form_data['code']
     name = form_data['name']
     coefficient = float(form_data['coefficient'])
-    department_id = form_data['department_id'] if session['role'] == 'admin' else session.get('department_id')
+    role = session.get('role')
+    department_id = form_data['department_id'] if role == 'admin' else session.get('department_id')
     update_course(course_id, code, name, coefficient, department_id)
     return True
 
@@ -60,7 +64,8 @@ def delete_semester_data(semester_id):
     return True
 
 def get_classes_data():
-    department_id = session.get('department_id') if session['role'] == 'department_admin' else None
+    role = session.get('role')
+    department_id = session.get('department_id') if role == 'department_admin' else None
     return get_classes(department_id)
 
 def add_class_data(form_data):
@@ -69,7 +74,8 @@ def add_class_data(form_data):
     semester_id = form_data['semester_id']
     hours = int(form_data['hours'])
     student_count = int(form_data['student_count'])
-    if session['role'] == 'department_admin':
+    role = session.get('role')
+    if role == 'department_admin':
         department_id = session.get('department_id')
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -89,7 +95,8 @@ def update_class_data(form_data):
     semester_id = form_data['semester_id']
     hours = int(form_data['hours'])
     student_count = int(form_data['student_count'])
-    if session['role'] == 'department_admin':
+    role = session.get('role')
+    if role == 'department_admin':
         department_id = session.get('department_id')
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -107,7 +114,8 @@ def delete_class_data(class_id):
     return True
 
 def get_class_form_data():
-    department_id = session.get('department_id') if session['role'] == 'department_admin' else None
+    role = session.get('role')
+    department_id = session.get('department_id') if role == 'department_admin' else None
     return {
         'semesters': get_semesters(),
         'courses': get_courses(department_id)
@@ -115,7 +123,8 @@ def get_class_form_data():
 
 def get_class_stats_data(form_data):
     academic_year = form_data['academic_year']
-    department_id = session.get('department_id') if session['role'] == 'department_admin' else None
+    role = session.get('role')
+    department_id = session.get('department_id') if role == 'department_admin' else None
     return get_class_stats(academic_year, department_id)
 
 def get_academic_years():
