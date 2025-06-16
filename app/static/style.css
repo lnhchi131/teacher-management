@@ -72,6 +72,10 @@ body {
     display: block; /* Hiển thị menu con khi mục chính có lớp active */
 }
 
+.sidebar ul li .submenu.active {
+    display: block;
+}
+
 .sidebar ul li .submenu li a {
     font-size: 0.9rem;
     padding: 8px 20px;

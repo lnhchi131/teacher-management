@@ -49,6 +49,17 @@
                             </ul>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-white {% if '/teaching_rate' in request.path or '/degree_coeff' in request.path or '/class_coeff' in request.path or '/teaching_salary' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                                <i class="fas fa-money-bill-wave"></i> Tính tiền giảng dạy
+                            </a>
+                            <ul class="submenu {% if '/teaching_rate' in request.path or '/degree_coeff' in request.path or '/class_coeff' in request.path or '/teaching_salary' in request.path %}active{% endif %}">
+                                <li><a class="nav-link text-light {% if '/teaching_rate' in request.path %}active{% endif %}" href="{{ url_for('teaching_payment_routes.teaching_rate') }}">Định mức tiền tiết</a></li>
+                                <li><a class="nav-link text-light {% if '/degree_coeff' in request.path %}active{% endif %}" href="{{ url_for('teacher_coeff_routes.degree_coeff_list') }}">Hệ số giáo viên</a></li>
+                                <li><a class="nav-link text-light {% if '/class_coeff' in request.path %}active{% endif %}" href="{{ url_for('class_coefficients_routes.class_coeff_list') }}">Hệ số lớp</a></li>
+                                <li><a class="nav-link text-light {% if '/teaching_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_salary_routes.teaching_salary') }}">Tính tiền dạy</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-white" href="{{ url_for('routes.logout') }}">
                                 <i class="fas fa-sign-out-alt"></i> Đăng xuất
                             </a>

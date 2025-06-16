@@ -31,3 +31,15 @@ VALUES ('admin', 'admin123', 'admin', NULL),
        ('dept_admin_khtn', 'dept123', 'department_admin', 2),
        ('GV001', 'gv001123', 'teacher', 1),
        ('GV002', 'gv002123', 'teacher', 2);
+
+INSERT INTO teaching_rate (id, amount)
+VALUES (1, 100000);
+
+INSERT INTO class_coefficients (min_students, max_students, coefficient) VALUES
+(0, 19, -0.3),
+(20, 29, -0.2),
+(30, 39, -0.1),
+(40, 49, 0),
+(50, 59, 0.1),
+(60, 69, 0.2),
+(70, 79, 0.3);

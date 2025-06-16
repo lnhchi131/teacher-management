@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">Danh sách hệ số lớp theo số sinh viên</h2>
+<a href="{{ url_for('class_coefficients_routes.class_coeff_add') }}" class="btn btn-primary mb-3">Thêm hệ số lớp</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Từ SV</th>
+            <th>Đến SV</th>
+            <th>Hệ số</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in data %}
+        <tr>
+            <td>{{ c[1] }}</td>
+            <td>{{ c[2] }}</td>
+            <td>{{ c[3] }}</td>
+            <td>
+                <a href="{{ url_for('class_coefficients_routes.class_coeff_edit', id=c[0]) }}" class="btn btn-warning btn-sm">Sửa</a>
+                <a href="{{ url_for('class_coefficients_routes.class_coeff_delete', id=c[0]) }}" class="btn btn-danger btn-sm">Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

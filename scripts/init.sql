@@ -60,3 +60,17 @@ CREATE TABLE users (
     department_id INT,
     FOREIGN KEY (department_id) REFERENCES departments(id)
 );
+
+CREATE TABLE teaching_rate (
+    id INT PRIMARY KEY,
+    amount FLOAT NOT NULL
+);
+
+
+CREATE TABLE class_coefficients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    min_students INT NOT NULL,
+    max_students INT NOT NULL,
+    coefficient FLOAT NOT NULL
+);
+
