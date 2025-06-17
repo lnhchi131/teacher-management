@@ -34,10 +34,10 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                            <a class="nav-link text-white {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path or '/class_assignments' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
                                 <i class="fas fa-chalkboard"></i> Quản lý lớp học
                             </a>
-                            <ul class="submenu {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path %}active{% endif %}">
+                            <ul class="submenu {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path or '/class_assignments' in request.path %}active{% endif %}">
                                 {% if current_user.role in ['admin', 'department_admin'] %}
                                 <li><a class="nav-link text-light {% if '/courses' in request.path %}active{% endif %}" href="{{ url_for('class_routes.courses') }}">Học phần</a></li>
                                 {% if current_user.role == 'admin' %}
@@ -45,6 +45,7 @@
                                 {% endif %}
                                 <li><a class="nav-link text-light {% if '/classes' in request.path %}active{% endif %}" href="{{ url_for('class_routes.classes') }}">Lớp học</a></li>
                                 <li><a class="nav-link text-light {% if '/class_stats' in request.path %}active{% endif %}" href="{{ url_for('class_routes.class_stats') }}">Thống kê lớp học</a></li>
+                                <li><a class="nav-link text-light {% if '/class_assignments' in request.path %}active{% endif %}" href="{{ url_for('class_routes.class_assignments') }}">Phân công lớp học</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -101,17 +102,17 @@
                 {% endwith %}
                 {% block content %}{% endblock %}
             </main>
-</div>
-</div>
-<script>
-    function toggleSubmenu(element) {
-        const submenu = element.nextElementSibling;
-        if (submenu.style.display === "block") {
-            submenu.style.display = "none";
-        } else {
-            submenu.style.display = "block";
+        </div>
+    </div>
+    <script>
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            if (submenu.style.display === "block") {
+                submenu.style.display = "none";
+            } else {
+                submenu.style.display = "block";
+            }
         }
-    }
-</script>
+    </script>
 </body>
 </html>

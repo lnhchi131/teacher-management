@@ -15,6 +15,7 @@ VALUES ('GV001', 'Nguyễn Thị A', '1980-05-15', '0123456789', 'nva@example.co
 
 INSERT INTO courses (code, name, coefficient, department_id) 
 VALUES ('CS101', 'Lập trình cơ bản', 1.0, 1), 
+       ('CS102', 'Cấu trúc dữ liệu', 1.0, 1), 
        ('MATH101', 'Toán cơ bản', 1.0, 2);
 
 INSERT INTO semesters (code, academic_year, start_date, end_date) 
@@ -23,7 +24,13 @@ VALUES ('HK1', '2024-2025', '2024-09-01', '2025-01-15'),
 
 INSERT INTO classes (code, course_id, semester_id, hours, student_count) 
 VALUES ('CS101-01', 1, 1, 45, 40),
-       ('MATH101-01', 2, 1, 45, 35);
+       ('CS102-01', 2, 1, 45, 35),
+       ('MATH101-01', 3, 1, 45, 35);
+
+INSERT INTO teacher_class_assignments (teacher_id, class_id) 
+VALUES (1, 1),  -- GV001 dạy CS101-01
+       (1, 2),  -- GV001 dạy CS102-01 (thêm để kiểm tra nhiều lớp)
+       (2, 3);  -- GV002 dạy MATH101-01
 
 INSERT INTO users (username, password, role, department_id) 
 VALUES ('admin', 'admin123', 'admin', NULL),

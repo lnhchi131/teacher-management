@@ -25,7 +25,7 @@
     <button type="submit" class="btn btn-primary">Tính tiền dạy</button>
 </form>
 
-{% if salary_data %}
+{% if salary_data and salary_data|length > 0 %}
 <h4>Kết quả cho giáo viên: {{ teacher_name }}</h4>
 <table class="table table-striped">
     <thead>
@@ -61,5 +61,10 @@
         </tr>
     </tfoot>
 </table>
+{% elif request.method == 'POST' %}
+<div class="alert alert-warning mt-3">
+    Không có dữ liệu lương cho giáo viên hoặc kỳ học đã chọn. Vui lòng kiểm tra phân công lớp học. 
+    <br>Debug: salary_data={{ salary_data }}, total_salary={{ total_salary }}, teacher_name={{ teacher_name }}
+</div>
 {% endif %}
 {% endblock %}

@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from ..controllers.teachers_controller import get_teachers_data, get_teacher_data, add_teacher_data, update_teacher_data, delete_teacher_data, get_teacher_form_data
 from ..controllers.degrees_controller import get_degrees_data
 from ..controllers.faculties_controller import get_faculties_data
+from ..controllers.classes_controller import get_assigned_classes_data
 
 bp = Blueprint('teacher_routes', __name__)
 
@@ -59,7 +60,8 @@ def teacher_profile():
     if not teacher:
         flash('Không tìm thấy thông tin giáo viên!')
         return redirect('/')
-    return render_template('teacher_profile.html', teacher=teacher)
+    assigned_classes = get_assigned_classes_data(current_user.id) if current_user.role == 'teacher' else None
+    return render_template('teacher_profile.html', teacher=teacher, assigned_classes=assigned_classes)
 
 @bp.route('/stats')
 @login_required

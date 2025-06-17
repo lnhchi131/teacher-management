@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mt-3">Danh sách phân công lớp học</h2>
+<form method="POST" action="{{ url_for('class_routes.class_assignments_remove') }}">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Chọn</th>
+                <th>Mã giáo viên</th>
+                <th>Họ tên</th>
+                <th>Khoa</th>
+                <th>Lớp học đã phân công</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher_id, classes in assignments.items() %}
+            <tr>
+                <td></td> <!-- Không cần checkbox cho giáo viên, chỉ cho lớp -->
+                <td>{{ teachers[loop.index0][1] }}</td>
+                <td>{{ teachers[loop.index0][2] }}</td>
+                <td>{{ teachers[loop.index0][3] }}</td>
+                <td>
+                    {% for class in classes %}
+                    <div>
+                        <input type="checkbox" name="remove_classes" value="{{ class[0] }}_{{ teacher_id }}">
+                        {{ class[1] }} ({{ class[2] }}, {{ class[3] }})
+                    </div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if current_user.role == 'admin' or current_user.role == 'department_admin' %}
+    <button type="submit" class="btn btn-danger mt-3">Hủy phân công lớp đã chọn</button>
+    {% endif %}
+</form>
+<a href="{{ url_for('class_routes.class_assignments_add') }}" class="btn btn-primary mt-3">Phân công lớp học mới</a>
+{% endblock %}

@@ -22,6 +22,37 @@ def get_teacher_by_id(teacher_id):
     conn.close()
     return teacher
 
+def get_teacher_by_class(class_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT t.id, t.full_name, dg.coefficient, dg.name, d.id, d.name "
+                   "FROM teachers t JOIN teacher_class_assignments tca ON t.id = tca.teacher_id "
+                   "JOIN degrees dg ON t.degree_id = dg.id "
+                   "JOIN departments d ON t.department_id = d.id "
+                   "WHERE tca.class_id = %s", (class_id,))
+    teacher = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return teacher if teacher else (None, None, 1.0, "Không xác định", None, "Không xác định")  # Giá trị mặc định
+
+def get_teachers_by_department(department_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM teachers WHERE department_id = %s", (department_id,))
+    teachers = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+    return teachers
+
+def get_all_teachers():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM teachers")
+    teachers = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+    return teachers
+
 def add_teacher(code, full_name, dob, phone, email, department_id, degree_id):
     conn = get_db_connection()
     cursor = conn.cursor()

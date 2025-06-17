@@ -2,10 +2,10 @@ from flask import session
 from ..models.classes_model import get_courses, add_course, update_course, delete_course, get_classes_by_course
 from ..models.classes_model import get_semesters, add_semester, update_semester, delete_semester, get_classes_by_semester
 from ..models.classes_model import get_classes, add_class, update_class, delete_class, get_class_stats
+from ..models.classes_model import get_teachers, get_assigned_classes, assign_class, remove_assignment, get_unassigned_classes
 from ..models.model import get_db_connection
 
 def get_courses_data():
-    # Kiểm tra xem session['role'] có tồn tại không
     role = session.get('role')
     department_id = session.get('department_id') if role == 'department_admin' else None
     return get_courses(department_id)
@@ -135,3 +135,56 @@ def get_academic_years():
     cursor.close()
     conn.close()
     return years
+
+def get_teachers_data():
+    return get_teachers()
+
+def get_assigned_classes_data(teacher_id):
+    return get_assigned_classes(teacher_id)
+
+def assign_class_data(form_data):
+    teacher_id = form_data['teacher_id']
+    class_id = form_data['class_id']
+    role = session.get('role')
+    if role == 'department_admin':
+        department_id = session.get('department_id')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT department_id FROM courses WHERE id = (SELECT course_id FROM classes WHERE id = %s)", (class_id,))
+        course_dept = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if course_dept and course_dept[0] != department_id:
+            return False
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT department_id FROM teachers WHERE id = %s", (teacher_id,))
+        teacher_dept = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if teacher_dept and teacher_dept[0] != department_id:
+            return False
+    assign_class(teacher_id, class_id)
+    return True
+
+def remove_assignment_data(form_data):
+    teacher_id = form_data['teacher_id']
+    class_id = form_data['class_id']
+    role = session.get('role')
+    if role == 'department_admin':
+        department_id = session.get('department_id')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT department_id FROM courses WHERE id = (SELECT course_id FROM classes WHERE id = %s)", (class_id,))
+        course_dept = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if course_dept and course_dept[0] != department_id:
+            return False
+    remove_assignment(teacher_id, class_id)
+    return True
+
+def get_unassigned_classes_data():
+    role = session.get('role')
+    department_id = session.get('department_id') if role == 'department_admin' else None
+    return get_unassigned_classes(department_id)

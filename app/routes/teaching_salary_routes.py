@@ -1,8 +1,13 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, redirect, flash
 from flask_login import login_required, current_user
 from ..controllers.teaching_salary_controller import calculate_teaching_salary
 from ..models.teachers_model import get_teachers
 from ..models.classes_model import get_semesters
+import logging
+
+# Cấu hình logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 bp = Blueprint('teaching_salary_routes', __name__)
 
@@ -19,7 +24,9 @@ def teaching_salary():
     if request.method == 'POST':
         selected_teacher = int(request.form['teacher_id'])
         selected_semester = int(request.form['semester_id'])
-        salary_data, total_salary, teacher_name = calculate_teaching_salary(selected_teacher, selected_semester)
+        logger.debug(f"Calculating salary for teacher_id={selected_teacher}, semester_id={selected_semester}")
+        salary_data, total_salary, teacher_name = calculate_teaching_salary(selected_teacher, semester_id=selected_semester)
+        logger.debug(f"Salary data: {salary_data}, Total: {total_salary}, Name: {teacher_name}")
         if not salary_data:
             flash('Không có dữ liệu lớp học cho giáo viên này trong kỳ học đã chọn.')
     return render_template('teaching_salary.html',

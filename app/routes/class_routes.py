@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from ..controllers.classes_controller import get_courses_data, add_course_data, update_course_data, delete_course_data
 from ..controllers.classes_controller import get_semesters_data, add_semester_data, update_semester_data, delete_semester_data
 from ..controllers.classes_controller import get_classes_data, add_class_data, update_class_data, delete_class_data, get_class_form_data
-from ..controllers.classes_controller import get_class_stats_data, get_academic_years
+from ..controllers.classes_controller import get_class_stats_data, get_academic_years, get_teachers_data
+from ..controllers.classes_controller import get_assigned_classes_data, assign_class_data, remove_assignment_data, get_unassigned_classes_data
 from ..controllers.faculties_controller import get_faculties_data
 
 bp = Blueprint('class_routes', __name__)
@@ -166,3 +167,46 @@ def class_stats():
     if request.method == 'POST':
         stats = get_class_stats_data(request.form)
     return render_template('class_stats.html', stats=stats, academic_years=academic_years)
+
+@bp.route('/class_assignments')
+@login_required
+def class_assignments():
+    if current_user.role not in ['admin', 'department_admin']:
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    teachers = get_teachers_data()
+    assignments = {}
+    for teacher in teachers:
+        assignments[teacher[0]] = get_assigned_classes_data(teacher[0])
+    return render_template('class_assignments.html', teachers=teachers, assignments=assignments)
+
+@bp.route('/class_assignments/add', methods=['GET', 'POST'])
+@login_required
+def class_assignments_add():
+    if current_user.role not in ['admin', 'department_admin']:
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    if request.method == 'POST':
+        if assign_class_data(request.form):
+            flash('Phân công lớp học thành công!')
+        else:
+            flash('Bạn không có quyền phân công lớp học này!')
+        return redirect('/class_assignments')
+    teachers = get_teachers_data()
+    unassigned_classes = get_unassigned_classes_data()
+    return render_template('class_assignment_form.html', teachers=teachers, classes=unassigned_classes)
+
+@bp.route('/class_assignments/remove', methods=['POST'])
+@login_required
+def class_assignments_remove():
+    if current_user.role not in ['admin', 'department_admin']:
+        flash('Không có quyền truy cập!')
+        return redirect('/class_assignments')
+    if 'remove_classes' in request.form:
+        for class_teacher_id in request.form.getlist('remove_classes'):
+            class_id, teacher_id = class_teacher_id.split('_')
+            if remove_assignment_data({'teacher_id': teacher_id, 'class_id': class_id}):
+                flash('Hủy phân công lớp học thành công!')
+            else:
+                flash('Bạn không có quyền hủy phân công lớp học này!')
+    return redirect('/class_assignments')

@@ -52,6 +52,15 @@ CREATE TABLE classes (
     FOREIGN KEY (semester_id) REFERENCES semesters(id)
 );
 
+CREATE TABLE teacher_class_assignments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id INT,
+    class_id INT,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+    FOREIGN KEY (class_id) REFERENCES classes(id),
+    UNIQUE (class_id) -- Chỉ đảm bảo một lớp học được phân cho một giáo viên duy nhất
+);
+
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -66,11 +75,9 @@ CREATE TABLE teaching_rate (
     amount FLOAT NOT NULL
 );
 
-
 CREATE TABLE class_coefficients (
     id INT AUTO_INCREMENT PRIMARY KEY,
     min_students INT NOT NULL,
     max_students INT NOT NULL,
     coefficient FLOAT NOT NULL
 );
-
