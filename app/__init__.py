@@ -14,7 +14,7 @@ def create_app():
         return get_user_by_id(user_id)
 
     with app.app_context():
-        from .routes import routes, degree_routes, faculty_routes, teacher_routes, class_routes, teaching_payment_routes, class_coefficients_routes, teacher_coeff_routes, teaching_salary_routes
+        from .routes import routes, degree_routes, faculty_routes, teacher_routes, class_routes, teaching_payment_routes, class_coefficients_routes, teacher_coeff_routes, teaching_salary_routes, teaching_report_routes
         app.register_blueprint(routes.bp)
         app.register_blueprint(degree_routes.bp)
         app.register_blueprint(faculty_routes.bp)
@@ -24,4 +24,5 @@ def create_app():
         app.register_blueprint(class_coefficients_routes.bp)
         app.register_blueprint(teacher_coeff_routes.bp)  
         app.register_blueprint(teaching_salary_routes.bp)
+        app.register_blueprint(teaching_report_routes.bp)
     return app

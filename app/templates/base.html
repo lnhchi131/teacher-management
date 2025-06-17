@@ -60,6 +60,28 @@
                             </ul>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-white {% if '/report/teacher_salary' in request.path or '/report/department_salary' in request.path or '/report/school_salary' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                                <i class="fas fa-chart-bar"></i> Báo cáo
+                            </a>
+                            <ul class="submenu {% if '/report/teacher_salary' in request.path or '/report/department_salary' in request.path or '/report/school_salary' in request.path %}active{% endif %}">
+                                <li>
+                                    <a class="nav-link text-light {% if '/report/teacher_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_teacher_salary') }}">
+                                        Giáo viên
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link text-light {% if '/report/department_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_department_salary') }}">
+                                        Khoa
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link text-light {% if '/report/school_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_school_salary') }}">
+                                        Trường
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-white" href="{{ url_for('routes.logout') }}">
                                 <i class="fas fa-sign-out-alt"></i> Đăng xuất
                             </a>

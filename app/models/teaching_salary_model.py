@@ -28,17 +28,34 @@ def calculate_teaching_salary(teacher_id, semester_id):
         total += tien_lop
     return result, total, teacher_name
 
-def get_teaching_classes(teacher_id, semester_id):
+def get_teaching_classes(teacher_id=None, department_id=None, academic_year=None, semester_id=None):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT cl.id, cl.code, co.name, cl.hours, cl.student_count, co.coefficient
+    sql = """
+        SELECT cl.id, cl.code, co.name, cl.hours, cl.student_count, co.coefficient,
+               t.id, t.full_name, d.coefficient, d.name, dep.id, dep.name, s.academic_year
         FROM classes cl
         JOIN courses co ON cl.course_id = co.id
-        WHERE cl.semester_id = %s AND cl.id IN (
-            SELECT id FROM classes WHERE cl.id = id AND cl.semester_id = %s AND cl.course_id = co.id
-        )
-    """, (semester_id, semester_id))
+        JOIN semesters s ON cl.semester_id = s.id
+        JOIN teachers t ON co.department_id = t.department_id
+        JOIN degrees d ON t.degree_id = d.id
+        JOIN departments dep ON t.department_id = dep.id
+        WHERE 1=1
+    """
+    params = []
+    if teacher_id:
+        sql += " AND t.id = %s"
+        params.append(teacher_id)
+    if department_id:
+        sql += " AND dep.id = %s"
+        params.append(department_id)
+    if academic_year:
+        sql += " AND s.academic_year = %s"
+        params.append(academic_year)
+    if semester_id:
+        sql += " AND s.id = %s"
+        params.append(semester_id)
+    cursor.execute(sql, tuple(params))
     classes = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -69,3 +86,13 @@ def get_teaching_rate():
 
 def get_class_coefficient(student_count):
     return get_coefficient_by_student_count(student_count)
+
+def get_teaching_salary_by_teacher_and_year(teacher_id, academic_year):
+    # Lấy tất cả lớp giáo viên dạy trong năm học
+    return get_teaching_classes(teacher_id=teacher_id, academic_year=academic_year)
+
+def get_teaching_salary_by_department_and_year(department_id, academic_year):
+    return get_teaching_classes(department_id=department_id, academic_year=academic_year)
+
+def get_teaching_salary_by_school_and_year(academic_year):
+    return get_teaching_classes(academic_year=academic_year)
