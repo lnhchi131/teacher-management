@@ -22,6 +22,17 @@ def get_teacher_by_id(teacher_id):
     conn.close()
     return teacher
 
+def get_teacher_by_code(teacher_code):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT t.id, t.code, t.full_name, t.dob, t.phone, t.email, d.name, dg.name "
+                   "FROM teachers t JOIN departments d ON t.department_id = d.id "
+                   "JOIN degrees dg ON t.degree_id = dg.id WHERE t.code = %s", (teacher_code,))
+    teacher = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return teacher
+
 def get_teacher_by_class(class_id):
     conn = get_db_connection()
     cursor = conn.cursor()

@@ -2,6 +2,7 @@
 {% block content %}
 <h2 class="mt-3">Tính tiền dạy cho giáo viên</h2>
 <form method="POST" class="mb-3" style="max-width:500px;">
+    {% if teachers %}
     <div class="mb-3">
         <label class="form-label">Chọn giáo viên</label>
         <select name="teacher_id" class="form-control" required>
@@ -11,6 +12,7 @@
             {% endfor %}
         </select>
     </div>
+    {% endif %}
     <div class="mb-3">
         <label class="form-label">Chọn kỳ học</label>
         <select name="semester_id" class="form-control" required>

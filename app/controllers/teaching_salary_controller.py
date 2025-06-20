@@ -1,4 +1,4 @@
-from ..models.teaching_salary_model import get_teaching_classes, get_teaching_rate, get_class_coefficient
+from ..models.teaching_salary_model import get_teaching_classes, get_teaching_rate, get_class_coefficient, get_teaching_salary_by_teacher_and_year, get_teaching_salary_by_department_and_year, get_teaching_salary_by_school_and_year
 from ..models.teachers_model import get_teacher_by_id
 import logging
 

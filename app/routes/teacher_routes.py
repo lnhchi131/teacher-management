@@ -4,6 +4,12 @@ from ..controllers.teachers_controller import get_teachers_data, get_teacher_dat
 from ..controllers.degrees_controller import get_degrees_data
 from ..controllers.faculties_controller import get_faculties_data
 from ..controllers.classes_controller import get_assigned_classes_data
+from ..models.teachers_model import get_teacher_by_code
+import logging
+
+# Cấu hình logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 bp = Blueprint('teacher_routes', __name__)
 
@@ -56,11 +62,18 @@ def teachers_delete(teacher_id):
 @bp.route('/profile')
 @login_required
 def teacher_profile():
-    teacher = get_teacher_data(current_user.id)
+    if current_user.role != 'teacher':
+        flash('Chỉ giáo viên mới có quyền truy cập!')
+        return redirect('/')
+    # Lấy thông tin giáo viên dựa trên username (code trong teachers)
+    teacher = get_teacher_by_code(current_user.username)
     if not teacher:
         flash('Không tìm thấy thông tin giáo viên!')
         return redirect('/')
-    assigned_classes = get_assigned_classes_data(current_user.id) if current_user.role == 'teacher' else None
+    teacher_id = teacher[0] if teacher else None
+    logger.debug(f"Teacher ID: {teacher_id}, Username: {current_user.username}")
+    assigned_classes = get_assigned_classes_data(teacher_id) if teacher_id else []
+    logger.debug(f"Assigned classes for teacher_id {teacher_id}: {assigned_classes}")
     return render_template('teacher_profile.html', teacher=teacher, assigned_classes=assigned_classes)
 
 @bp.route('/stats')

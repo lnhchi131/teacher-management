@@ -23,7 +23,7 @@
     <button type="submit" class="btn btn-primary">Xem báo cáo</button>
 </form>
 
-{% if report_data %}
+{% if report_data and report_data|length > 0 %}
 <h4>Kết quả cho giáo viên: {{ teacher_name }}</h4>
 <table class="table table-striped">
     <thead>
@@ -59,5 +59,10 @@
         </tr>
     </tfoot>
 </table>
+{% elif request.method == 'POST' %}
+<div class="alert alert-warning mt-3">
+    Không có dữ liệu báo cáo cho giáo viên hoặc năm học đã chọn. Vui lòng kiểm tra phân công lớp học.
+    <br>Debug: report_data={{ report_data }}, total_salary={{ total_salary }}, teacher_name={{ teacher_name }}
+</div>
 {% endif %}
 {% endblock %}

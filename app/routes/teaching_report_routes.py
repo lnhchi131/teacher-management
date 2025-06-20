@@ -7,12 +7,21 @@ from ..controllers.teaching_salary_controller import (
 )
 from ..models.teachers_model import get_teachers
 from ..controllers.classes_controller import get_academic_years
+import logging
+
+# Cấu hình logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 bp = Blueprint('teaching_report_routes', __name__)
 
 @bp.route('/report/teacher_salary', methods=['GET', 'POST'])
 @login_required
 def report_teacher_salary():
+    if current_user.role not in ['admin', 'department_admin']:
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    
     teachers = get_teachers()
     academic_years = get_academic_years()
     report_data = []
@@ -20,12 +29,16 @@ def report_teacher_salary():
     teacher_name = None
     selected_teacher = None
     selected_year = None
+
     if request.method == 'POST':
         selected_teacher = int(request.form['teacher_id'])
         selected_year = request.form['academic_year']
+        logger.debug(f"Generating report for teacher_id={selected_teacher}, year={selected_year}")
         report_data, total_salary, teacher_name = report_teacher_salary_by_year(selected_teacher, selected_year)
+        logger.debug(f"Report data: {report_data}, Total: {total_salary}, Name: {teacher_name}")
         if not report_data:
             flash('Không có dữ liệu lớp học cho giáo viên này trong năm học đã chọn.')
+
     return render_template('report_teacher_salary.html',
                            teachers=teachers,
                            academic_years=academic_years,
@@ -38,6 +51,9 @@ def report_teacher_salary():
 @bp.route('/report/department_salary', methods=['GET', 'POST'])
 @login_required
 def report_department_salary():
+    if current_user.role not in ['admin', 'department_admin']:
+        flash('Không có quyền truy cập!')
+        return redirect('/')
     from ..models.faculties_model import get_faculties
     from ..controllers.classes_controller import get_academic_years
 
@@ -46,10 +62,13 @@ def report_department_salary():
     report_data = {}
     selected_faculty = None
     selected_year = None
+
     if request.method == 'POST':
         selected_faculty = int(request.form['faculty_id'])
         selected_year = request.form['academic_year']
+        logger.debug(f"Generating report for faculty_id={selected_faculty}, year={selected_year}")
         report_data = report_department_salary_by_year(selected_faculty, selected_year)
+
     return render_template('report_department_salary.html',
                            faculties=faculties,
                            academic_years=academic_years,
@@ -60,15 +79,20 @@ def report_department_salary():
 @bp.route('/report/school_salary', methods=['GET', 'POST'])
 @login_required
 def report_school_salary():
+    if current_user.role not in ['admin', 'department_admin']:
+        flash('Không có quyền truy cập!')
+        return redirect('/')
+    
     from ..controllers.classes_controller import get_academic_years
-
     academic_years = get_academic_years()
     report_data = {}
     selected_year = None
+
     if request.method == 'POST':
         selected_year = request.form['academic_year']
-        from ..controllers.teaching_salary_controller import report_school_salary_by_year
+        logger.debug(f"Generating report for year={selected_year}")
         report_data = report_school_salary_by_year(selected_year)
+
     return render_template('report_school_salary.html',
                            academic_years=academic_years,
                            report_data=report_data,

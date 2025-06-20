@@ -1,61 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 class="mt-3">Thông tin cá nhân</h2>
-<table class="table table-striped">
-    <tr>
-        <th>Mã số</th>
-        <td>{{ teacher[1] }}</td>
-    </tr>
-    <tr>
-        <th>Họ tên</th>
-        <td>{{ teacher[2] }}</td>
-    </tr>
-    <tr>
-        <th>Ngày sinh</th>
-        <td>{{ teacher[3] }}</td>
-    </tr>
-    <tr>
-        <th>Điện thoại</th>
-        <td>{{ teacher[4] }}</td>
-    </tr>
-    <tr>
-        <th>Email</th>
-        <td>{{ teacher[5] }}</td>
-    </tr>
-    <tr>
-        <th>Khoa</th>
-        <td>{{ teacher[6] }}</td>
-    </tr>
-    <tr>
-        <th>Bằng cấp</th>
-        <td>{{ teacher[7] }}</td>
-    </tr>
-</table>
-<h3 class="mt-3">Lớp học đã được phân công</h3>
-{% if assigned_classes %}
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Mã lớp</th>
-            <th>Học phần</th>
-            <th>Năm học</th>
-            <th>Số tiết</th>
-            <th>Số sinh viên</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for class in assigned_classes %}
-        <tr>
-            <td>{{ class[1] }}</td>
-            <td>{{ class[2] }}</td>
-            <td>{{ class[3] }}</td>
-            <td>{{ class[4] }}</td>
-            <td>{{ class[5] }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>Chưa có lớp học nào được phân công.</p>
-{% endif %}
+<div class="container mt-4">
+    <h2 class="mb-4">Thông tin cá nhân</h2>
+    {% if teacher %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Thông tin giáo viên</h5>
+            <p class="card-text"><strong>Mã số:</strong> {{ teacher[1] }}</p>
+            <p class="card-text"><strong>Họ và tên:</strong> {{ teacher[2] }}</p>
+            <p class="card-text"><strong>Năm sinh:</strong> {{ teacher[3] }}</p>
+            <p class="card-text"><strong>Điện thoại:</strong> {{ teacher[4] }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ teacher[5] }}</p>
+            <p class="card-text"><strong>Khoa:</strong> {{ teacher[6] }}</p>
+            <p class="card-text"><strong>Bằng cấp:</strong> {{ teacher[7] }}</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-danger mt-3">
+        Không tìm thấy thông tin giáo viên!
+    </div>
+    {% endif %}
+
+    <h2 class="mt-4">Lớp học đã được phân công</h2>
+    {% if assigned_classes and assigned_classes|length > 0 %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Mã lớp</th>
+                <th>Học phần</th>
+                <th>Năm học</th>
+                <th>Số tiết</th>
+                <th>Số sinh viên</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class in assigned_classes %}
+            <tr>
+                <td>{{ class[1] }}</td>
+                <td>{{ class[2] }}</td>
+                <td>{{ class[3] }}</td>
+                <td>{{ class[4] }}</td>
+                <td>{{ class[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info mt-3">
+        Chưa có lớp học nào được phân công.
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -8,6 +8,10 @@ def get_teachers_data():
 def get_teacher_data(teacher_id):
     return get_teacher_by_id(teacher_id)
 
+def get_teacher_by_code(teacher_code):
+    from ..models.teachers_model import get_teacher_by_code
+    return get_teacher_by_code(teacher_code)
+
 def add_teacher_data(form_data):
     code = form_data['code']
     full_name = form_data['full_name']
