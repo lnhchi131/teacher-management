@@ -25,4 +25,7 @@
         {% endfor %}
     </tbody>
 </table>
+<a class="nav-link text-white {% if '/teaching_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_salary_routes.teaching_salary') }}">
+    <i class="fas fa-money-bill-wave"></i> Lương của tôi
+</a>
 {% endblock %}

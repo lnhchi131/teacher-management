@@ -15,78 +15,95 @@
                 <div class="position-sticky pt-3">
                     <h5 class="text-white text-center">Quản lý</h5>
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white {% if request.path == '/' %}active{% endif %}" href="{{ url_for('routes.index') }}">
-                                <i class="fas fa-home"></i> Trang chủ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white {% if '/degrees' in request.path or '/faculties' in request.path or '/teachers' in request.path or '/stats' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
-                                <i class="fas fa-user-graduate"></i> Quản lý giáo viên
-                            </a>
-                            <ul class="submenu {% if '/degrees' in request.path or '/faculties' in request.path or '/teachers' in request.path or '/stats' in request.path %}active{% endif %}">
-                                {% if current_user.role == 'admin' %}
-                                <li><a class="nav-link text-light {% if '/degrees' in request.path %}active{% endif %}" href="{{ url_for('degree_routes.degrees') }}">Bằng cấp</a></li>
-                                <li><a class="nav-link text-light {% if '/faculties' in request.path %}active{% endif %}" href="{{ url_for('faculty_routes.faculties') }}">Khoa</a></li>
-                                {% endif %}
-                                <li><a class="nav-link text-light {% if '/teachers' in request.path %}active{% endif %}" href="{{ url_for('teacher_routes.teachers') }}">Giáo viên</a></li>
-                                <li><a class="nav-link text-light {% if '/stats' in request.path %}active{% endif %}" href="{{ url_for('teacher_routes.stats') }}">Thống kê giáo viên</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path or '/class_assignments' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
-                                <i class="fas fa-chalkboard"></i> Quản lý lớp học
-                            </a>
-                            <ul class="submenu {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path or '/class_assignments' in request.path %}active{% endif %}">
-                                {% if current_user.role in ['admin', 'department_admin'] %}
-                                <li><a class="nav-link text-light {% if '/courses' in request.path %}active{% endif %}" href="{{ url_for('class_routes.courses') }}">Học phần</a></li>
-                                {% if current_user.role == 'admin' %}
-                                <li><a class="nav-link text-light {% if '/semesters' in request.path %}active{% endif %}" href="{{ url_for('class_routes.semesters') }}">Kỳ học</a></li>
-                                {% endif %}
-                                <li><a class="nav-link text-light {% if '/classes' in request.path %}active{% endif %}" href="{{ url_for('class_routes.classes') }}">Lớp học</a></li>
-                                <li><a class="nav-link text-light {% if '/class_stats' in request.path %}active{% endif %}" href="{{ url_for('class_routes.class_stats') }}">Thống kê lớp học</a></li>
-                                <li><a class="nav-link text-light {% if '/class_assignments' in request.path %}active{% endif %}" href="{{ url_for('class_routes.class_assignments') }}">Phân công lớp học</a></li>
-                                {% endif %}
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white {% if '/teaching_rate' in request.path or '/degree_coeff' in request.path or '/class_coeff' in request.path or '/teaching_salary' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
-                                <i class="fas fa-money-bill-wave"></i> Tính tiền giảng dạy
-                            </a>
-                            <ul class="submenu {% if '/teaching_rate' in request.path or '/degree_coeff' in request.path or '/class_coeff' in request.path or '/teaching_salary' in request.path %}active{% endif %}">
-                                <li><a class="nav-link text-light {% if '/teaching_rate' in request.path %}active{% endif %}" href="{{ url_for('teaching_payment_routes.teaching_rate') }}">Định mức tiền tiết</a></li>
-                                <li><a class="nav-link text-light {% if '/degree_coeff' in request.path %}active{% endif %}" href="{{ url_for('teacher_coeff_routes.degree_coeff_list') }}">Hệ số giáo viên</a></li>
-                                <li><a class="nav-link text-light {% if '/class_coeff' in request.path %}active{% endif %}" href="{{ url_for('class_coefficients_routes.class_coeff_list') }}">Hệ số lớp</a></li>
-                                <li><a class="nav-link text-light {% if '/teaching_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_salary_routes.teaching_salary') }}">Tính tiền dạy</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white {% if '/report/teacher_salary' in request.path or '/report/department_salary' in request.path or '/report/school_salary' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
-                                <i class="fas fa-chart-bar"></i> Báo cáo
-                            </a>
-                            <ul class="submenu {% if '/report/teacher_salary' in request.path or '/report/department_salary' in request.path or '/report/school_salary' in request.path %}active{% endif %}">
-                                <li>
-                                    <a class="nav-link text-light {% if '/report/teacher_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_teacher_salary') }}">
-                                        Giáo viên
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="nav-link text-light {% if '/report/department_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_department_salary') }}">
-                                        Khoa
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="nav-link text-light {% if '/report/school_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_school_salary') }}">
-                                        Trường
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('routes.logout') }}">
-                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                            </a>
-                        </li>
+                        {% if current_user.role == 'teacher' %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if '/profile' in request.path %}active{% endif %}" href="{{ url_for('teacher_routes.teacher_profile') }}">
+                                    <i class="fas fa-user"></i> Thông tin cá nhân
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if '/teaching_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_salary_routes.teaching_salary') }}">
+                                    <i class="fas fa-money-bill-wave"></i> Lương của tôi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('routes.logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if request.path == '/' %}active{% endif %}" href="{{ url_for('routes.index') }}">
+                                    <i class="fas fa-home"></i> Trang chủ
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if '/degrees' in request.path or '/faculties' in request.path or '/teachers' in request.path or '/stats' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                                    <i class="fas fa-user-graduate"></i> Quản lý giáo viên
+                                </a>
+                                <ul class="submenu {% if '/degrees' in request.path or '/faculties' in request.path or '/teachers' in request.path or '/stats' in request.path %}active{% endif %}">
+                                    {% if current_user.role == 'admin' %}
+                                    <li><a class="nav-link text-light {% if '/degrees' in request.path %}active{% endif %}" href="{{ url_for('degree_routes.degrees') }}">Bằng cấp</a></li>
+                                    <li><a class="nav-link text-light {% if '/faculties' in request.path %}active{% endif %}" href="{{ url_for('faculty_routes.faculties') }}">Khoa</a></li>
+                                    {% endif %}
+                                    <li><a class="nav-link text-light {% if '/teachers' in request.path %}active{% endif %}" href="{{ url_for('teacher_routes.teachers') }}">Giáo viên</a></li>
+                                    <li><a class="nav-link text-light {% if '/stats' in request.path %}active{% endif %}" href="{{ url_for('teacher_routes.stats') }}">Thống kê giáo viên</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                                    <i class="fas fa-chalkboard"></i> Quản lý lớp học
+                                </a>
+                                <ul class="submenu {% if '/courses' in request.path or '/semesters' in request.path or '/classes' in request.path or '/class_stats' in request.path %}active{% endif %}">
+                                    {% if current_user.role in ['admin', 'department_admin'] %}
+                                    <li><a class="nav-link text-light {% if '/courses' in request.path %}active{% endif %}" href="{{ url_for('class_routes.courses') }}">Học phần</a></li>
+                                    {% if current_user.role == 'admin' %}
+                                    <li><a class="nav-link text-light {% if '/semesters' in request.path %}active{% endif %}" href="{{ url_for('class_routes.semesters') }}">Kỳ học</a></li>
+                                    {% endif %}
+                                    <li><a class="nav-link text-light {% if '/classes' in request.path %}active{% endif %}" href="{{ url_for('class_routes.classes') }}">Lớp học</a></li>
+                                    <li><a class="nav-link text-light {% if '/class_stats' in request.path %}active{% endif %}" href="{{ url_for('class_routes.class_stats') }}">Thống kê lớp học</a></li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if '/teaching_rate' in request.path or '/degree_coeff' in request.path or '/class_coeff' in request.path or '/teaching_salary' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                                    <i class="fas fa-money-bill-wave"></i> Tính tiền giảng dạy
+                                </a>
+                                <ul class="submenu {% if '/teaching_rate' in request.path or '/degree_coeff' in request.path or '/class_coeff' in request.path or '/teaching_salary' in request.path %}active{% endif %}">
+                                    <li><a class="nav-link text-light {% if '/teaching_rate' in request.path %}active{% endif %}" href="{{ url_for('teaching_payment_routes.teaching_rate') }}">Định mức tiền tiết</a></li>
+                                    <li><a class="nav-link text-light {% if '/degree_coeff' in request.path %}active{% endif %}" href="{{ url_for('teacher_coeff_routes.degree_coeff_list') }}">Hệ số giáo viên</a></li>
+                                    <li><a class="nav-link text-light {% if '/class_coeff' in request.path %}active{% endif %}" href="{{ url_for('class_coefficients_routes.class_coeff_list') }}">Hệ số lớp</a></li>
+                                    <li><a class="nav-link text-light {% if '/teaching_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_salary_routes.teaching_salary') }}">Tính tiền dạy</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white {% if '/report/teacher_salary' in request.path or '/report/department_salary' in request.path or '/report/school_salary' in request.path %}active{% endif %}" href="javascript:void(0);" onclick="toggleSubmenu(this)">
+                                    <i class="fas fa-chart-bar"></i> Báo cáo
+                                </a>
+                                <ul class="submenu {% if '/report/teacher_salary' in request.path or '/report/department_salary' in request.path or '/report/school_salary' in request.path %}active{% endif %}">
+                                    <li>
+                                        <a class="nav-link text-light {% if '/report/teacher_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_teacher_salary') }}">
+                                            Giáo viên
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link text-light {% if '/report/department_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_department_salary') }}">
+                                            Khoa
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link text-light {% if '/report/school_salary' in request.path %}active{% endif %}" href="{{ url_for('teaching_report_routes.report_school_salary') }}">
+                                            Trường
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('routes.logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </nav>
@@ -102,17 +119,17 @@
                 {% endwith %}
                 {% block content %}{% endblock %}
             </main>
-        </div>
-    </div>
-    <script>
-        function toggleSubmenu(element) {
-            const submenu = element.nextElementSibling;
-            if (submenu.style.display === "block") {
-                submenu.style.display = "none";
-            } else {
-                submenu.style.display = "block";
-            }
+</div>
+</div>
+<script>
+    function toggleSubmenu(element) {
+        const submenu = element.nextElementSibling;
+        if (submenu.style.display === "block") {
+            submenu.style.display = "none";
+        } else {
+            submenu.style.display = "block";
         }
-    </script>
+    }
+</script>
 </body>
 </html>
