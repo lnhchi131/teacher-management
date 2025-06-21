@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, flash
 from flask_login import login_required, current_user
 from ..controllers.teaching_salary_controller import calculate_teaching_salary
-from ..models.teachers_model import get_teachers, get_teacher_by_code
+from ..models.teachers_model import get_teachers, get_teacher_by_code, get_teachers_by_department
 from ..models.classes_model import get_semesters
 import logging
 
@@ -16,7 +16,10 @@ bp = Blueprint('teaching_salary_routes', __name__)
 def teaching_salary():
     # Lấy thông tin giáo viên hiện tại
     teacher = get_teacher_by_code(current_user.username) if current_user.role == 'teacher' else None
-    teachers = get_teachers() if current_user.role in ['admin', 'department_admin'] else []
+    if current_user.role == 'department_admin':
+        teachers = get_teachers_by_department(current_user.department_id)
+    else:
+        teachers = get_teachers()
     semesters = get_semesters()
     salary_data = []
     total_salary = 0

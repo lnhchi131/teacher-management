@@ -21,8 +21,11 @@ def report_teacher_salary():
     if current_user.role not in ['admin', 'department_admin']:
         flash('Không có quyền truy cập!')
         return redirect('/')
-    
-    teachers = get_teachers()
+    if current_user.role == 'department_admin':
+        from ..models.teachers_model import get_teachers_by_department
+        teachers = get_teachers_by_department(current_user.department_id)
+    else:
+        teachers = get_teachers()
     academic_years = get_academic_years()
     report_data = []
     total_salary = 0
@@ -57,14 +60,21 @@ def report_department_salary():
     from ..models.faculties_model import get_faculties
     from ..controllers.classes_controller import get_academic_years
 
-    faculties = get_faculties()
+    if current_user.role == 'department_admin':
+        faculties = [f for f in get_faculties() if f[0] == current_user.department_id]
+    else:
+        faculties = get_faculties()
     academic_years = get_academic_years()
     report_data = {}
     selected_faculty = None
     selected_year = None
 
     if request.method == 'POST':
-        selected_faculty = int(request.form['faculty_id'])
+        if current_user.role == 'department_admin':
+            # Bắt buộc faculty_id là khoa của mình, không lấy từ form
+            selected_faculty = current_user.department_id
+        else:
+            selected_faculty = int(request.form['faculty_id'])
         selected_year = request.form['academic_year']
         logger.debug(f"Generating report for faculty_id={selected_faculty}, year={selected_year}")
         report_data = report_department_salary_by_year(selected_faculty, selected_year)

@@ -3,6 +3,12 @@ from ..models.faculties_model import get_faculties
 from ..models.degrees_model import get_degrees
 
 def get_teachers_data():
+    from flask import session
+    role = session.get('role')
+    department_id = session.get('department_id')
+    if role == 'department_admin':
+        from ..models.teachers_model import get_teachers_by_department
+        return get_teachers_by_department(department_id)
     return get_teachers()
 
 def get_teacher_data(teacher_id):

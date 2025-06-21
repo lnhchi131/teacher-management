@@ -49,8 +49,10 @@ def get_teacher_by_class(class_id):
 def get_teachers_by_department(department_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM teachers WHERE department_id = %s", (department_id,))
-    teachers = [row[0] for row in cursor.fetchall()]
+    cursor.execute("SELECT t.id, t.code, t.full_name, t.dob, t.phone, t.email, d.name, dg.name "
+                   "FROM teachers t JOIN departments d ON t.department_id = d.id "
+                   "JOIN degrees dg ON t.degree_id = dg.id WHERE t.department_id = %s", (department_id,))
+    teachers = cursor.fetchall()
     cursor.close()
     conn.close()
     return teachers

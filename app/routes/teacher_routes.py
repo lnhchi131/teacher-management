@@ -81,5 +81,21 @@ def teacher_profile():
 def stats():
     degrees = get_degrees_data()
     faculties = get_faculties_data()
-    stats = [(degree[1], degree[3]) for degree in degrees] + [(faculty[2], faculty[4]) for faculty in faculties]
+    if current_user.role == 'department_admin':
+        # Chỉ lấy faculty của mình
+        faculties = [f for f in faculties if f[0] == current_user.department_id]
+        # Chỉ thống kê giáo viên khoa mình cho từng bằng cấp
+        from ..models.teachers_model import get_teachers_by_department
+        teachers = get_teachers_by_department(current_user.department_id)
+        # Đếm số giáo viên theo bằng cấp trong khoa mình
+        degree_stats = []
+        for degree in degrees:
+            count = sum(1 for t in teachers if t[7] == degree[1])
+            degree_stats.append((degree[1], count))
+        # Thống kê theo khoa chỉ có khoa mình
+        faculty_stats = [(faculties[0][2], len(teachers))]
+        stats = degree_stats + faculty_stats
+    else:
+        # Admin: thống kê toàn bộ
+        stats = [(degree[1], degree[3]) for degree in degrees] + [(faculty[2], faculty[4]) for faculty in faculties]
     return render_template('stats.html', stats=stats)
