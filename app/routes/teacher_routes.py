@@ -29,9 +29,15 @@ def teachers_add():
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        add_teacher_data(request.form)
-        flash('Thêm giáo viên thành công!')
-        return redirect('/teachers')
+        if add_teacher_data(request.form):
+            flash('Thêm giáo viên thành công!')
+            return redirect('/teachers')
+        # Nếu lỗi, giữ lại form và dữ liệu đã nhập
+        form_data = get_teacher_form_data()
+        return render_template('teachers_form.html',
+                               departments=form_data['departments'],
+                               degrees=form_data['degrees'],
+                               teacher=request.form)  # truyền lại dữ liệu đã nhập
     form_data = get_teacher_form_data()
     return render_template('teachers_form.html', departments=form_data['departments'], degrees=form_data['degrees'])
 
@@ -42,9 +48,13 @@ def teachers_edit(teacher_id):
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        update_teacher_data(request.form)
-        flash('Cập nhật giáo viên thành công!')
-        return redirect('/teachers')
+        if update_teacher_data(request.form):
+            flash('Cập nhật giáo viên thành công!')
+            return redirect('/teachers')
+        # Nếu lỗi, giữ lại form và hiển thị thông báo lỗi
+        teacher = get_teacher_data(teacher_id)
+        form_data = get_teacher_form_data()
+        return render_template('teachers_form.html', teacher=teacher, departments=form_data['departments'], degrees=form_data['degrees'])
     teacher = get_teacher_data(teacher_id)
     form_data = get_teacher_form_data()
     return render_template('teachers_form.html', teacher=teacher, departments=form_data['departments'], degrees=form_data['degrees'])

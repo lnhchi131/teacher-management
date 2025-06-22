@@ -36,9 +36,11 @@ def class_coeff_edit(id):
     data = get_class_coefficients_data()
     coeff = next((c for c in data if c[0] == id), None)
     if request.method == 'POST':
-        update_class_coefficient_data(request.form)
-        flash('Cập nhật hệ số lớp thành công!')
-        return redirect('/class_coeff')
+        if update_class_coefficient_data(request.form):
+            flash('Cập nhật hệ số lớp thành công!')
+            return redirect('/class_coeff')
+        # Nếu lỗi, giữ lại form và hiển thị thông báo lỗi
+        return render_template('class_coefficients_form.html', coeff=request.form)
     return render_template('class_coefficients_form.html', coeff=coeff)
 
 @bp.route('/class_coeff/delete/<int:id>')

@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2 class="mt-3">Danh sách bằng cấp</h2>
+<div class="alert alert-info shadow-sm mb-4 guide-box">
+    <b>Hướng dẫn nhanh:</b>
+    <ul class="mb-0">
+        <li>Quản lý các bằng cấp của giáo viên.</li>
+        <li>Nhấn "Thêm bằng cấp" để thêm mới hoặc "Sửa" để cập nhật thông tin.</li>
+        <li>Có thể xóa khi không còn ràng buộc dữ liệu.</li>
+    </ul>
+</div>
 <a href="{{ url_for('degree_routes.degrees_add') }}" class="btn btn-primary mb-3">Thêm bằng cấp</a>
 <table class="table table-striped">
     <thead>

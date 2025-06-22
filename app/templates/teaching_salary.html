@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2 class="mt-3">Tính tiền dạy cho giáo viên</h2>
+<div class="alert alert-info shadow-sm mb-4 guide-box">
+    <b>Hướng dẫn nhanh:</b>
+    <ul class="mb-0">
+        <li>Chọn kỳ học và (nếu có quyền) giáo viên cần tính.</li>
+        <li>Nhấn “Tính tiền dạy” để xem tổng số tiết và hệ số nhân.</li>
+        <li>Khi không thấy dữ liệu, cần kiểm tra việc phân công lớp học.</li>
+    </ul>
+</div>
 <form method="POST" class="mb-3" style="max-width:500px;">
     {% if teachers and current_user.role in ['admin', 'department_admin'] %}
     <div class="mb-3">

@@ -4,12 +4,17 @@
 <form method="POST" class="mb-3" style="max-width:500px;">
     <div class="mb-3">
         <label class="form-label">Chọn khoa</label>
-        <select name="faculty_id" class="form-control" required>
-            <option value="">-- Chọn khoa --</option>
-            {% for f in faculties %}
-            <option value="{{ f[0] }}" {% if selected_faculty and selected_faculty == f[0] %}selected{% endif %}>{{ f[1] }}</option>
-            {% endfor %}
-        </select>
+        {% if current_user.role == 'department_admin' %}
+            <input type="text" class="form-control" value="{{ faculties[0][1] }}" readonly>
+            <input type="hidden" name="faculty_id" value="{{ faculties[0][0] }}">
+        {% else %}
+            <select name="faculty_id" class="form-control" required>
+                <option value="">-- Chọn khoa --</option>
+                {% for f in faculties %}
+                <option value="{{ f[0] }}" {% if selected_faculty and selected_faculty == f[0] %}selected{% endif %}>{{ f[1] }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
     </div>
     <div class="mb-3">
         <label class="form-label">Chọn năm học</label>

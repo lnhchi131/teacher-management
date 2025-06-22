@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2 class="mt-3">Danh sách giáo viên</h2>
+<div class="alert alert-info shadow-sm mb-4 guide-box">
+    <b>Hướng dẫn nhanh:</b>
+    <ul class="mb-0">
+        <li>Xem danh sách, thêm mới hoặc chỉnh sửa thông tin giáo viên.</li>
+        <li>Nhấn "Thêm giáo viên" để tạo mới, hoặc "Sửa" để cập nhật thông tin.</li>
+        <li>Có thể xóa giáo viên khi không còn liên kết dữ liệu.</li>
+    </ul>
+</div>
 {% if current_user.role == 'admin' %}
 <a href="{{ url_for('teacher_routes.teachers_add') }}" class="btn btn-primary mb-3">Thêm giáo viên</a>
 {% endif %}

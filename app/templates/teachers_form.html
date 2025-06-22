@@ -43,4 +43,22 @@
     </div>
     <button type="submit" class="btn btn-primary">{% if teacher %}Cập nhật{% else %}Thêm{% endif %}</button>
 </form>
+<script>
+    function is_valid_code(code) {
+        return /^[A-Za-z0-9]+$/.test(code);
+    }
+
+    function is_valid_date(date_str) {
+        try {
+            var dob = new Date(date_str);
+            var now = new Date();
+            if (dob > now || dob.getFullYear() < 1900) {
+                return false;
+            }
+            return true;
+        } catch {
+            return false;
+        }
+    }
+</script>
 {% endblock %}

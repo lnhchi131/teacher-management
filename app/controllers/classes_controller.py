@@ -1,9 +1,36 @@
-from flask import session
-from ..models.classes_model import get_courses, add_course, update_course, delete_course, get_classes_by_course
-from ..models.classes_model import get_semesters, add_semester, update_semester, delete_semester, get_classes_by_semester
-from ..models.classes_model import get_classes, add_class, update_class, delete_class, get_class_stats
-from ..models.classes_model import get_teachers, get_assigned_classes, assign_class, remove_assignment, get_unassigned_classes
+import re
+from flask import session, flash
+from ..models.classes_model import (
+    get_courses, add_course, update_course, delete_course, get_classes_by_course,
+    get_semesters, add_semester, update_semester, delete_semester, get_classes_by_semester,
+    get_classes, add_class, update_class, delete_class, get_class_stats,
+    get_teachers, get_assigned_classes, assign_class, remove_assignment, get_unassigned_classes
+)
 from ..models.model import get_db_connection
+
+def is_valid_course_code(code):
+    # Chỉ cho phép chữ cái và số, không dấu, không ký tự đặc biệt
+    return re.match(r"^[A-Za-z0-9]+$", code)
+
+def is_valid_course_name(name):
+    # Chỉ cho phép chữ cái, dấu cách, dấu tiếng Việt, tối thiểu 2 ký tự
+    return re.match(r"^[A-Za-zÀ-ỹà-ỹ\s]{2,}$", name)
+
+def is_valid_class_code(code):
+    # Định dạng: chữ/số, có thể có dấu gạch ngang, ví dụ: CS101-01
+    return re.match(r"^[A-Za-z0-9\-]+$", code)
+
+def is_valid_class_name(name):
+    # Nếu có trường tên lớp, chỉ cho phép chữ cái, dấu cách, dấu tiếng Việt, tối thiểu 2 ký tự
+    return re.match(r"^[A-Za-zÀ-ỹà-ỹ\s]{2,}$", name)
+
+def is_valid_semester_code(code):
+    # Chỉ cho phép chữ cái và số, không dấu, không ký tự đặc biệt
+    return re.match(r"^[A-Za-z0-9]+$", code)
+
+def is_valid_academic_year(year):
+    # Định dạng: 4 số - 4 số, ví dụ: 2024-2025
+    return re.match(r"^\d{4}-\d{4}$", year)
 
 def get_courses_data():
     role = session.get('role')
@@ -16,6 +43,16 @@ def add_course_data(form_data):
     coefficient = float(form_data['coefficient'])
     role = session.get('role')
     department_id = form_data['department_id'] if role == 'admin' else session.get('department_id')
+    courses = get_courses()
+    if any(c[1] == code for c in courses):
+        flash('Mã học phần đã tồn tại!')
+        return False
+    if not is_valid_course_code(code):
+        flash('Mã học phần không hợp lệ! Chỉ được chứa chữ cái và số.')
+        return False
+    if not is_valid_course_name(name):
+        flash('Tên học phần không hợp lệ! Chỉ được chứa chữ cái và dấu cách.')
+        return False
     add_course(code, name, coefficient, department_id)
     return True
 
@@ -26,6 +63,16 @@ def update_course_data(form_data):
     coefficient = float(form_data['coefficient'])
     role = session.get('role')
     department_id = form_data['department_id'] if role == 'admin' else session.get('department_id')
+    courses = get_courses()
+    if any(c[1] == code and str(c[0]) != str(course_id) for c in courses):
+        flash('Mã học phần đã tồn tại!')
+        return False
+    if not is_valid_course_code(code):
+        flash('Mã học phần không hợp lệ! Chỉ được chứa chữ cái và số.')
+        return False
+    if not is_valid_course_name(name):
+        flash('Tên học phần không hợp lệ! Chỉ được chứa chữ cái và dấu cách.')
+        return False
     update_course(course_id, code, name, coefficient, department_id)
     return True
 
@@ -44,6 +91,16 @@ def add_semester_data(form_data):
     academic_year = form_data['academic_year']
     start_date = form_data['start_date']
     end_date = form_data['end_date']
+    semesters = get_semesters()
+    if any(s[1] == code for s in semesters):
+        flash('Mã kỳ học đã tồn tại!')
+        return False
+    if not is_valid_semester_code(code):
+        flash('Mã kỳ học không hợp lệ! Chỉ được chứa chữ cái và số.')
+        return False
+    if not is_valid_academic_year(academic_year):
+        flash('Năm học không hợp lệ! Định dạng phải là YYYY-YYYY.')
+        return False
     add_semester(code, academic_year, start_date, end_date)
     return True
 
@@ -53,6 +110,16 @@ def update_semester_data(form_data):
     academic_year = form_data['academic_year']
     start_date = form_data['start_date']
     end_date = form_data['end_date']
+    semesters = get_semesters()
+    if any(s[1] == code and str(s[0]) != str(semester_id) for s in semesters):
+        flash('Mã kỳ học đã tồn tại!')
+        return False
+    if not is_valid_semester_code(code):
+        flash('Mã kỳ học không hợp lệ! Chỉ được chứa chữ cái và số.')
+        return False
+    if not is_valid_academic_year(academic_year):
+        flash('Năm học không hợp lệ! Định dạng phải là YYYY-YYYY.')
+        return False
     update_semester(semester_id, code, academic_year, start_date, end_date)
     return True
 
@@ -70,6 +137,19 @@ def get_classes_data():
 
 def add_class_data(form_data):
     code = form_data['code']
+    classes = get_classes()
+    if any(c[1] == code for c in classes):
+        flash('Mã lớp đã tồn tại!')
+        return False
+    if not is_valid_class_code(code):
+        flash('Mã lớp không hợp lệ! Chỉ được chứa chữ cái, số, dấu gạch ngang, không dấu tiếng Việt, không ký tự đặc biệt.')
+        return False
+    # Nếu có trường tên lớp:
+    # name = form_data['name']
+    # if not is_valid_class_name(name):
+    #     flash('Tên lớp không hợp lệ! Chỉ được chứa chữ cái và dấu cách.')
+    #     return False
+
     course_id = form_data['course_id']
     semester_id = form_data['semester_id']
     hours = int(form_data['hours'])
@@ -84,6 +164,7 @@ def add_class_data(form_data):
         cursor.close()
         conn.close()
         if course_dept and course_dept[0] != department_id:
+            flash('Bạn chỉ được thêm lớp cho học phần thuộc khoa của mình!')
             return False
     add_class(code, course_id, semester_id, hours, student_count)
     return True
@@ -91,11 +172,24 @@ def add_class_data(form_data):
 def update_class_data(form_data):
     class_id = form_data['class_id']
     code = form_data['code']
-    course_id = form_data['course_id']
-    semester_id = form_data['semester_id']
-    hours = int(form_data['hours'])
-    student_count = int(form_data['student_count'])
-    role = session.get('role')
+    classes = get_classes()
+    if any(c[1] == code and str(c[0]) != str(class_id) for c in classes):
+        flash('Mã lớp đã tồn tại!')
+        return False
+    if not is_valid_class_code(code):
+        flash('Mã lớp không hợp lệ! Chỉ được chứa chữ cái, số, dấu gạch ngang, không dấu tiếng Việt, không ký tự đặc biệt.')
+        return False
+    # Nếu có trường tên lớp:
+    # name = form_data['name']
+    # if not is_valid_class_name(name):
+    #     flash('Tên lớp không hợp lệ! Chỉ được chứa chữ cái và dấu cách.')
+    #     return False
+
+        course_id = form_data['course_id']
+        semester_id = form_data['semester_id']
+        hours = int(form_data['hours'])
+        student_count = int(form_data['student_count'])
+        role = session.get('role')
     if role == 'department_admin':
         department_id = session.get('department_id')
         conn = get_db_connection()
@@ -105,6 +199,7 @@ def update_class_data(form_data):
         cursor.close()
         conn.close()
         if course_dept and course_dept[0] != department_id:
+            flash('Bạn chỉ được sửa lớp cho học phần thuộc khoa của mình!')
             return False
     update_class(class_id, code, course_id, semester_id, hours, student_count)
     return True

@@ -20,9 +20,11 @@ def faculties_add():
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        add_faculty_data(request.form)
-        flash('Thêm khoa thành công!')
-        return redirect('/faculties')
+        if add_faculty_data(request.form):
+            flash('Thêm khoa thành công!')
+            return redirect('/faculties')
+        # Nếu lỗi, giữ lại form và hiển thị thông báo lỗi
+        return render_template('faculties_form.html', faculty=request.form)
     return render_template('faculties_form.html')
 
 @bp.route('/faculties/edit/<int:faculty_id>', methods=['GET', 'POST'])
@@ -32,9 +34,9 @@ def faculties_edit(faculty_id):
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        update_faculty_data(request.form)
-        flash('Cập nhật khoa thành công!')
-        return redirect('/faculties')
+        if update_faculty_data(request.form):
+            flash('Cập nhật khoa thành công!')
+            return redirect('/faculties')
     faculties = get_faculties_data()
     faculty = next((f for f in faculties if f[0] == faculty_id), None)
     return render_template('faculties_form.html', faculty=faculty)

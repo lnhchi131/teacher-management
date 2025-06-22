@@ -2,6 +2,14 @@
 {% block content %}
 <h2 class="mt-3">Danh sách kỳ học</h2>
 <a href="{{ url_for('class_routes.semesters_add') }}" class="btn btn-primary mb-3">Thêm kỳ học</a>
+<div class="alert alert-info shadow-sm mb-4 guide-box">
+    <b>Hướng dẫn nhanh:</b>
+    <ul class="mb-0">
+        <li>Quản lý danh sách kỳ học, thêm mới hoặc chỉnh sửa thông tin kỳ học.</li>
+        <li>Nhấn "Thêm kỳ học" để tạo mới, hoặc "Sửa" để cập nhật thông tin.</li>
+        <li>Có thể xóa kỳ học khi không còn liên kết dữ liệu.</li>
+    </ul>
+</div>
 <table class="table table-striped">
     <thead>
         <tr>

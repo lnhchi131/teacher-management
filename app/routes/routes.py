@@ -6,7 +6,17 @@ bp = Blueprint('routes', __name__)
 @bp.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    from ..models.teachers_model import get_teachers
+    from ..models.classes_model import get_classes, get_courses, get_semesters
+    from ..models.faculties_model import get_faculties
+    stats = {
+        'teachers': len(get_teachers()),
+        'classes': len(get_classes()),
+        'courses': len(get_courses()),
+        'faculties': len(get_faculties()),
+        'semesters': len(get_semesters())
+    }
+    return render_template('index.html', stats=stats)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():

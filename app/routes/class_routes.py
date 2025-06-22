@@ -25,9 +25,12 @@ def courses_add():
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        add_course_data(request.form)
-        flash('Thêm học phần thành công!')
-        return redirect('/courses')
+        if add_course_data(request.form):
+            flash('Thêm học phần thành công!')
+            return redirect('/courses')
+        # Nếu lỗi, giữ lại form và hiển thị thông báo lỗi
+        departments = get_faculties_data()
+        return render_template('courses_form.html', departments=departments, course=request.form)
     departments = get_faculties_data()
     return render_template('courses_form.html', departments=departments)
 
@@ -74,9 +77,11 @@ def semesters_add():
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        add_semester_data(request.form)
-        flash('Thêm kỳ học thành công!')
-        return redirect('/semesters')
+        if add_semester_data(request.form):
+            flash('Thêm kỳ học thành công!')
+            return redirect('/semesters')
+        # Nếu lỗi, giữ lại form và hiển thị thông báo lỗi
+        return render_template('semesters_form.html', semester=request.form)
     return render_template('semesters_form.html')
 
 @bp.route('/semesters/edit/<int:semester_id>', methods=['GET', 'POST'])

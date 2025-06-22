@@ -21,7 +21,10 @@
         <label class="form-label">Kỳ học</label>
         <select name="semester_id" class="form-control" required>
             {% for semester in semesters %}
-            <option value="{{ semester[0] }}" {% if class_ and class_[3] == semester[2] %}selected{% endif %}>{{ semester[2] }}</option>
+            <option value="{{ semester[0] }}"
+                {% if class_ and class_[3] == semester[2] %}selected{% endif %}>
+                {{ semester[1] }} - {{ semester[2] }}
+            </option>
             {% endfor %}
         </select>
     </div>

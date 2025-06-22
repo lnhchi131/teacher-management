@@ -20,9 +20,11 @@ def degrees_add():
         flash('Không có quyền truy cập!')
         return redirect('/')
     if request.method == 'POST':
-        add_degree_data(request.form)
-        flash('Thêm bằng cấp thành công!')
-        return redirect('/degrees')
+        if add_degree_data(request.form):
+            flash('Thêm bằng cấp thành công!')
+            return redirect('/degrees')
+        # Nếu lỗi, giữ lại form và hiển thị thông báo lỗi
+        return render_template('degrees_form.html', degree=request.form)
     return render_template('degrees_form.html')
 
 @bp.route('/degrees/edit/<int:degree_id>', methods=['GET', 'POST'])

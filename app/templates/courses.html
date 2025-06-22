@@ -2,6 +2,14 @@
 {% block content %}
 <h2 class="mt-3">Danh sách học phần</h2>
 <a href="{{ url_for('class_routes.courses_add') }}" class="btn btn-primary mb-3">Thêm học phần</a>
+<div class="alert alert-info shadow-sm mb-4 guide-box">
+    <b>Hướng dẫn nhanh:</b>
+    <ul class="mb-0">
+        <li>Xem và quản lý các học phần.</li>
+        <li>Nhấn "Thêm học phần" để tạo mới hoặc "Sửa" để cập nhật thông tin.</li>
+        <li>Có thể xóa nếu đã đảm bảo không còn liên kết dữ liệu.</li>
+    </ul>
+</div>
 <table class="table table-striped">
     <thead>
         <tr>
