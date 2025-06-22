@@ -4,7 +4,8 @@
     <h2 class="mb-2 fw-bold text-center">Trang chủ</h2>
     <p class="mb-4 text-center fs-5">Chào mừng đến với hệ thống quản lý giáo viên và lớp học!</p>
 
-    <!-- Dashboard thống kê -->
+    <!-- Dashboard thống kê (chỉ hiển thị cho admin) -->
+    {% if current_user.role == 'admin' %}
     <div class="row justify-content-center g-4 mb-4">
         <div class="col-6 col-md-2">
             <div class="card shadow-sm text-center border-0">
@@ -52,6 +53,7 @@
             </div>
         </div>
     </div>
+    
 
     <!-- Các chức năng chính -->
     <div class="row justify-content-center mb-4">
@@ -88,5 +90,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
