@@ -16,38 +16,71 @@
 
 {% if report_data %}
     <h4>Kết quả:</h4>
-    {% for teacher_id, teacher in report_data.items() %}
-        <div class="mb-3">
-            <strong>{{ teacher.teacher_name }}</strong> ({{ teacher.department_name }}) - Tổng tiền: <b>{{ "{:,.0f}".format(teacher.total_salary) }} VNĐ</b>
-            <table class="table table-striped mt-2">
-                <thead>
-                    <tr>
-                        <th>Mã lớp</th>
-                        <th>Tên học phần</th>
-                        <th>Số tiết</th>
-                        <th>Số SV</th>
-                        <th>Hệ số học phần</th>
-                        <th>Hệ số lớp</th>
-                        <th>Số tiết quy đổi</th>
-                        <th>Tiền dạy lớp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in teacher.details %}
-                    <tr>
-                        <td>{{ row.class_code }}</td>
-                        <td>{{ row.course_name }}</td>
-                        <td>{{ row.hours }}</td>
-                        <td>{{ row.student_count }}</td>
-                        <td>{{ row.course_coeff }}</td>
-                        <td>{{ row.class_coeff }}</td>
-                        <td>{{ row.so_tiet_quy_doi }}</td>
-                        <td>{{ "{:,.0f}".format(row.tien_lop) }} VNĐ</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endfor %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Giáo viên</th>
+                <th>Khoa</th>
+                <th>Tổng tiền dạy</th>
+                <th>Chi tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher_id, teacher in report_data.items() %}
+            <tr>
+                <td>{{ teacher.teacher_name }}</td>
+                <td>{{ teacher.department_name }}</td>
+                <td>{{ "{:,.0f}".format(teacher.total_salary) }} VNĐ</td>
+                <td>
+                    <button class="btn btn-info btn-sm" onclick="toggleDetails('{{ teacher_id }}')">Xem chi tiết</button>
+                </td>
+            </tr>
+            <tr id="details-{{ teacher_id }}" style="display:none;">
+                <td colspan="4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Mã lớp</th>
+                                <th>Tên học phần</th>
+                                <th>Số tiết</th>
+                                <th>Số SV</th>
+                                <th>Hệ số học phần</th>
+                                <th>Hệ số lớp</th>
+                                <th>Số tiết quy đổi</th>
+                                <th>Tiền dạy lớp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in teacher.details %}
+                            <tr>
+                                <td>{{ row.class_code }}</td>
+                                <td>{{ row.course_name }}</td>
+                                <td>{{ row.hours }}</td>
+                                <td>{{ row.student_count }}</td>
+                                <td>{{ row.course_coeff }}</td>
+                                <td>{{ row.class_coeff }}</td>
+                                <td>{{ row.so_tiet_quy_doi }}</td>
+                                <td>{{ "{:,.0f}".format(row.tien_lop) }} VNĐ</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="text-end">Tổng tiền dạy toàn trường:</th>
+                <th>{{ "{:,.0f}".format(total_school_salary) }} VNĐ</th>
+            </tr>
+        </tfoot>
+    </table>
 {% endif %}
+<script>
+    function toggleDetails(id) {
+        const detailsRow = document.getElementById(`details-${id}`);
+        detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+    }
+</script>
 {% endblock %}

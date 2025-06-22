@@ -36,11 +36,7 @@ def calculate_teaching_salary(teacher_id=None, department_id=None, academic_year
     for cl in classes:
         class_id, class_code, course_name, hours, student_count, course_coeff, \
         t_id, t_name, teacher_coeff_from_db, degree_name_from_db, dep_id, dep_name, academic_year = cl
-        class_coeff = get_class_coefficient(student_count)
-        logger.debug(f"Class data: code={class_code}, hours={hours}, student_count={student_count}, "
-                     f"coeffs={course_coeff}+{class_coeff}")
-        so_tiet_quy_doi = hours * (course_coeff + class_coeff)
-        tien_lop = so_tiet_quy_doi * teacher_coeff * teaching_rate
+        so_tiet_quy_doi, tien_lop = calculate_salary(hours, student_count, course_coeff, teacher_coeff, teaching_rate)
         result.append({
             'class_code': class_code,
             'course_name': course_name,
@@ -79,9 +75,7 @@ def report_teacher_salary_by_year(teacher_id, academic_year):
     for cl in classes:
         class_id, class_code, course_name, hours, student_count, course_coeff, \
         t_id, t_name, teacher_coeff_from_db, degree_name_from_db, dep_id, dep_name, academic_year = cl
-        class_coeff = get_class_coefficient(student_count)
-        so_tiet_quy_doi = hours * (course_coeff + class_coeff)
-        tien_lop = so_tiet_quy_doi * teacher_coeff * teaching_rate
+        so_tiet_quy_doi, tien_lop = calculate_salary(hours, student_count, course_coeff, teacher_coeff, teaching_rate)
         result.append({
             'class_code': class_code,
             'course_name': course_name,
@@ -102,9 +96,14 @@ def report_department_salary_by_year(department_id, academic_year):
     for cl in classes:
         class_id, class_code, course_name, hours, student_count, course_coeff, \
         t_id, t_name, teacher_coeff_from_db, degree_name_from_db, dep_id, dep_name, academic_year = cl
+        
+        # Tính toán class_coeff
         class_coeff = get_class_coefficient(student_count)
+        
+        # Tính toán số tiết quy đổi và tiền lớp
         so_tiet_quy_doi = hours * (course_coeff + class_coeff)
         tien_lop = so_tiet_quy_doi * teacher_coeff_from_db * teaching_rate
+        
         if t_id not in result:
             result[t_id] = {
                 'teacher_name': t_name,
@@ -117,7 +116,7 @@ def report_department_salary_by_year(department_id, academic_year):
             'hours': hours,
             'student_count': student_count,
             'course_coeff': course_coeff,
-            'class_coeff': class_coeff,
+            'class_coeff': class_coeff,  # Sử dụng class_coeff đã tính toán
             'so_tiet_quy_doi': so_tiet_quy_doi,
             'tien_lop': tien_lop,
         })
@@ -128,31 +127,39 @@ def report_school_salary_by_year(academic_year):
     classes = get_teaching_salary_by_school_and_year(academic_year)
     teaching_rate = get_teaching_rate()
     result = {}
+    total_school_salary = 0
     for cl in classes:
-        class_id, class_code, course_name, hours, student_count, course_coeff, \
-        t_id, t_name, teacher_coeff_from_db, degree_name_from_db, dep_id, dep_name, academic_year = cl
-        class_coeff = get_class_coefficient(student_count)
-        so_tiet_quy_doi = hours * (course_coeff + class_coeff)
-        tien_lop = so_tiet_quy_doi * teacher_coeff_from_db * teaching_rate
-        if t_id not in result:
-            result[t_id] = {
-                'teacher_name': t_name,
-                'department_name': dep_name,
+        teacher_id = cl[6]
+        teacher_name = cl[7]
+        teacher_coeff = cl[8]  # Lấy hệ số giáo viên từ kết quả truy vấn
+        department_name = cl[11]
+        if teacher_id not in result:
+            result[teacher_id] = {
+                'teacher_name': teacher_name,
+                'department_name': department_name,
                 'total_salary': 0,
                 'details': []
             }
-        result[t_id]['details'].append({
-            'class_code': class_code,
-            'course_name': course_name,
-            'hours': hours,
-            'student_count': student_count,
-            'course_coeff': course_coeff,
+        class_coeff = get_class_coefficient(cl[4])
+        so_tiet_quy_doi = cl[3] * (cl[5] + class_coeff)
+        tien_lop = so_tiet_quy_doi * teacher_coeff * teaching_rate  # Thêm teacher_coeff
+        result[teacher_id]['total_salary'] += tien_lop
+        total_school_salary += tien_lop
+        result[teacher_id]['details'].append({
+            'class_code': cl[1],
+            'course_name': cl[2],
+            'hours': cl[3],
+            'student_count': cl[4],
+            'course_coeff': cl[5],
             'class_coeff': class_coeff,
             'so_tiet_quy_doi': so_tiet_quy_doi,
-            'tien_lop': tien_lop,
+            'tien_lop': tien_lop
         })
-        result[t_id]['total_salary'] += tien_lop
-    return result
+    return result, total_school_salary
+
+def get_degrees():
+    from ..models.degrees_model import get_degrees
+    return get_degrees()
 
 # Hàm phụ trợ
 def get_teacher_department(teacher_id):
@@ -160,6 +167,8 @@ def get_teacher_department(teacher_id):
     teacher = get_teacher_by_id(teacher_id)
     return teacher[5] if teacher and len(teacher) > 5 else None  # department_id (index 5)
 
-def get_degrees():
-    from ..models.degrees_model import get_degrees
-    return get_degrees()
+def calculate_salary(hours, student_count, course_coeff, teacher_coeff, teaching_rate):
+    class_coeff = get_class_coefficient(student_count)
+    so_tiet_quy_doi = hours * (course_coeff + class_coeff)
+    tien_lop = so_tiet_quy_doi * teacher_coeff * teaching_rate
+    return so_tiet_quy_doi, tien_lop
