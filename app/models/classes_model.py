@@ -130,10 +130,29 @@ def update_class(class_id, code, course_id, semester_id, hours, student_count):
 def delete_class(class_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    # Xóa phân công lớp học trước
+    cursor.execute("DELETE FROM teacher_class_assignments WHERE class_id = %s", (class_id,))
+    # Sau đó mới xóa lớp học
     cursor.execute("DELETE FROM classes WHERE id = %s", (class_id,))
     conn.commit()
     cursor.close()
     conn.close()
+
+def delete_class_data(class_id):
+    # Kiểm tra có phân công không
+    from .classes_model import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM teacher_class_assignments WHERE class_id = %s", (class_id,))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if count > 0:
+        # Có phân công, không cho xóa
+        flash('Không thể xóa lớp học vì đã được phân công cho giáo viên!')
+        return False
+    delete_class(class_id)
+    return True
 
 def get_class_stats(academic_year, department_id=None):
     conn = get_db_connection()

@@ -31,7 +31,8 @@ def login():
             session['role'] = user.role
             session['department_id'] = user.department_id
             return redirect('/')
-        flash('Tên đăng nhập hoặc mật khẩu không đúng!')
+        else:
+            flash('Tên đăng nhập hoặc mật khẩu không đúng!')
     return render_template('login.html')
 
 @bp.route('/logout')
