@@ -75,6 +75,7 @@ def report_teacher_salary_by_year(teacher_id, academic_year):
     for cl in classes:
         class_id, class_code, course_name, hours, student_count, course_coeff, \
         t_id, t_name, teacher_coeff_from_db, degree_name_from_db, dep_id, dep_name, academic_year = cl
+        class_coeff = get_class_coefficient(student_count)  
         so_tiet_quy_doi, tien_lop = calculate_salary(hours, student_count, course_coeff, teacher_coeff, teaching_rate)
         result.append({
             'class_code': class_code,
@@ -82,7 +83,7 @@ def report_teacher_salary_by_year(teacher_id, academic_year):
             'hours': hours,
             'student_count': student_count,
             'course_coeff': course_coeff,
-            'class_coeff': class_coeff,
+            'class_coeff': class_coeff,  
             'so_tiet_quy_doi': so_tiet_quy_doi,
             'tien_lop': tien_lop,
         })
