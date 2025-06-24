@@ -241,24 +241,10 @@ def assign_class_data(form_data):
     teacher_id = form_data['teacher_id']
     class_id = form_data['class_id']
     role = session.get('role')
-    if role == 'department_admin':
-        department_id = session.get('department_id')
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT department_id FROM courses WHERE id = (SELECT course_id FROM classes WHERE id = %s)", (class_id,))
-        course_dept = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        if course_dept and course_dept[0] != department_id:
-            return False
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT department_id FROM teachers WHERE id = %s", (teacher_id,))
-        teacher_dept = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        if teacher_dept and teacher_dept[0] != department_id:
-            return False
+    # Sửa điều kiện: cho phép cả admin và department_admin
+    if role not in ['admin', 'department_admin']:
+        flash('Không có quyền phân công lớp học này!')
+        return False
     assign_class(teacher_id, class_id)
     return True
 
@@ -266,16 +252,10 @@ def remove_assignment_data(form_data):
     teacher_id = form_data['teacher_id']
     class_id = form_data['class_id']
     role = session.get('role')
-    if role == 'department_admin':
-        department_id = session.get('department_id')
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT department_id FROM courses WHERE id = (SELECT course_id FROM classes WHERE id = %s)", (class_id,))
-        course_dept = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        if course_dept and course_dept[0] != department_id:
-            return False
+    # Sửa điều kiện: cho phép cả admin và department_admin
+    if role not in ['admin', 'department_admin']:
+        flash('Không có quyền hủy phân công lớp học này!')
+        return False
     remove_assignment(teacher_id, class_id)
     return True
 
